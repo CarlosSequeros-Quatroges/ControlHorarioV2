@@ -1,61 +1,88 @@
-
 <nav class="navbar navbar-expand-sm navbar-light bg-light">
   <div class="container-fluid">
     <a class="navbar-brand" [routerLink]="['/home']">
-      <img src='/assets/logo_quatroges_sinfondo.png' width="50%"
-        max-width='10em'>
+      <img
+        src="/assets/logo_quatroges_sinfondo.png"
+        width="50%"
+        max-width="10em"
+      />
     </a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
-      data-bs-target="#navbarNav" aria-controls="navbarNav"
-      aria-expanded="false" aria-label="Toggle navigation"
-      *ngIf="auth.estaAutenticado()">
+    <button
+      class="navbar-toggler"
+      type="button"
+      data-bs-toggle="collapse"
+      data-bs-target="#navbarNav"
+      aria-controls="navbarNav"
+      aria-expanded="false"
+      aria-label="Toggle navigation"
+      *ngIf="auth.estaAutenticado()"
+    >
       <span class="navbar-toggler-icon"></span>
     </button>
-    <div class="collapse navbar-collapse" id="navbarNav"
-      *ngIf="auth.estaAutenticado()">
+    <div
+      class="collapse navbar-collapse"
+      id="navbarNav"
+      *ngIf="auth.estaAutenticado()"
+    >
       <ul class="navbar-nav me-auto">
         <li class="nav-item">
-          <a class="nav-link" aria-current="page"
-            [routerLink]="['/home']"><i class="fas fa-list"></i><span
-              class='d-sm-none d-md-inline'> Inicio</span></a>
-        </li>
-        <li class="nav-item" >
-          <a class="nav-link" [routerLink]="['/registro-jornada']"><i
-              class="fas fa-clock"></i><span class='d-sm-none d-md-inline'>
-              Registrar</span></a>
+          <a class="nav-link" aria-current="page" [routerLink]="['/home']"
+            ><i class="fas fa-list"></i
+            ><span class="d-sm-none d-md-inline"> Inicio</span></a
+          >
         </li>
         <li class="nav-item">
-          <a class="nav-link" [routerLink]="['/incidencias']"><i
-              class="fas fa-exclamation-circle"></i><span class='d-sm-none
-              d-md-inline'>
-              Incidencias</span></a>
+          <a class="nav-link" [routerLink]="['/registro-jornada']"
+            ><i class="fas fa-clock"></i
+            ><span class="d-sm-none d-md-inline"> Registrar</span></a
+          >
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" [routerLink]="['/incidencias']"
+            ><i class="fas fa-exclamation-circle"></i
+            ><span class="d-sm-none d-md-inline"> Incidencias</span></a
+          >
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" [routerLink]="['/vacaciones']"
+            ><mat-icon>beach_access</mat-icon
+            ><span class="d-sm-none d-md-inline"> Vacaciones</span></a
+          >
         </li>
       </ul>
       <ul class="navbar-nav nav-left">
         <div>
           <li class="nav-item">
-            <a class="nav-link" aria-current="page"><span class="badge bg-info"
-                style="color:#0000b0"><i
-                  class="fas
-                  fa-user"></i> {{ usuario.nombre}}</span>
+            <a class="nav-link" aria-current="page"
+              ><span class="badge bg-info" style="color: #0000b0"
+                ><i class="fas fa-user"></i> {{ usuario.nombre }}</span
+              >
             </a>
           </li>
           <li class="nav-item" *ngIf="usuario.admin">
-            <a class="nav-link" aria-current="page"><span class="badge bg-info"
-                style="color:#054103"><i class="fa fa-user-tie"></i> Modo administrador: {{ usuario.admin_user}}</span>
+            <a class="nav-link" aria-current="page"
+              ><span class="badge bg-info" style="color: #054103"
+                ><i class="fa fa-user-tie"></i> Modo administrador:
+                {{ usuario.admin_user }}</span
+              >
             </a>
           </li>
         </div>
-        <li class="nav-item"  >
-          <a class="nav-link" aria-current="page"
-            [routerLink]="['/new-passwd']" *ngIf="!usuario.admin" ><i class="fa fa-key" aria-hidden="true"></i><span
-              class='d-sm-none d-md-inline'>
-              Cambiar Clave</span></a>
+        <li class="nav-item">
+          <a
+            class="nav-link"
+            aria-current="page"
+            [routerLink]="['/new-passwd']"
+            *ngIf="!usuario.admin"
+            ><i class="fa fa-key" aria-hidden="true"></i
+            ><span class="d-sm-none d-md-inline"> Cambiar Clave</span></a
+          >
         </li>
         <li class="nav-item">
-          <a class="nav-link" (click)="salir()"><i class="fas
-              fa-sign-out-alt"></i><span class='d-sm-none d-md-inline'>
-              Salir</span></a>
+          <a class="nav-link" (click)="salir()"
+            ><i class="fas fa-sign-out-alt"></i
+            ><span class="d-sm-none d-md-inline"> Salir</span></a
+          >
         </li>
       </ul>
     </div>

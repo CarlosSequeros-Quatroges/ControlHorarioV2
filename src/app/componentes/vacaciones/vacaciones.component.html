@@ -1,0 +1,26 @@
+<h2>Resumen de vacaciones</h2>
+<h4>Ejercicio: {{ ejercicio }}</h4>
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th scope="col">Fecha inicio</th>
+      <th scope="col">Días</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let vac of vacaciones">
+      <td>{{ vac.fecha }}</td>
+      <td>{{ vac.dias }}</td>
+    </tr>
+
+    <tr *ngIf="vacaciones.length === 0">
+      <td colspan="2">
+        No se han encontrado vacaciones para el ejercicio seleccionado.
+      </td>
+    </tr>
+    <tr *ngIf="vacaciones.length !== 0">
+      <td>Total días:</td>
+      <td>{{ totalDias }}</td>
+    </tr>
+  </tbody>
+</table>
