@@ -1,0 +1,62 @@
+
+<main class="login">
+  <form [formGroup]="loginForm" (ngSubmit)="validar()" class="custom-form">
+
+    <h1 class="h5 mb-3 fw-normal">REGISTRO DE JORNADA.</h1>
+    <h1 class="h5 mb-3 fw-normal">Control de acceso</h1>
+
+    <label for="floatingInput">Email</label>
+    <div class="form-floating">
+      <input type="email" class="form-control" id="floatingInput"
+        placeholder="name@example.com"
+        formControlName="email">
+    </div>
+
+    <div class="error-messages">
+      <ng-container *ngFor="let error of error_messages.email">
+        <div class="error-message"
+          *ngIf="loginForm.get('email')?.hasError(error.type) &&
+              (loginForm.get('email')?.dirty ||
+              loginForm.get('email')?.touched)">
+          {{ error.message }}
+        </div>
+      </ng-container>
+    </div>
+
+    <label for="floatingPassword">Clave</label>
+    <div class="form-floating">
+      <input type="password" class="form-control" id="floatingPassword"
+        placeholder="Password"
+        formControlName="password">
+    </div>
+    <div class="error-messages">
+      <ng-container *ngFor="let error of error_messages.password">
+        <div class="error-message"
+          *ngIf="loginForm.get('password')?.hasError(error.type) &&
+              (loginForm.get('password')?.dirty ||
+              loginForm.get('password')?.touched)">
+          {{ error.message }}
+        </div>
+      </ng-container>
+    </div>
+
+    <section class="example-section">
+      <mat-checkbox
+        class="example-margin"
+        [labelPosition]="labelPosition()"
+        formControlName="recordar">
+        Recordar usuario
+      </mat-checkbox>
+    </section>
+
+    <section>
+      <div class="example-button-row">
+        <button class="w-100 btn btn-lg btn-primary"
+          type="submit">Validar</button>
+      </div>
+    </section>
+
+    <p class="mt-5 mb-3 text-muted">&copy; Microgestión software s.l.
+      2025</p>
+  </form>
+</main>

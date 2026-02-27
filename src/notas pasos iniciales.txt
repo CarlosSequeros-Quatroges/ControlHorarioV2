@@ -1,0 +1,46 @@
+PASOS PREVIOS
+- crear un repositorio vacio en github
+- clonar repositorio en carpeta proyectos (crea la carpeta con el nombre del repositorio)
+- desde terminal en carpeta proyecto crear base angular (ng install [nombre proyecto] --directory [carpeta   .\])
+- ng serve
+
+-(si no se ha creado, copiar un favico en src)
+TUTORIAL ANGULAR FIRST ANGULAR APP
+
+1 reset
+    modificar index.html ->contenido
+    modificar app.componets.ts  -> template y title en exported class
+
+2 create home component
+    ng generate component home  (ng serve para compilar)
+    añadir componente en app.component.ts 
+
+3. housing location component 
+    ng generate component home  (ng serve para compilar)
+    añadir componente en home.component.ts 
+    template de home.component.ts para incluir
+    el nuevo componente en Home
+
+4. crear interface (tipo de datos)
+    ng generate interface housingLocation
+    añadir las variables de datos para el componente (variables de entrada y salida)
+    importar en homeComponent crear instancia con datos de prueba dentro 
+    de export class homeComponent
+
+5. crear imput parameter en componente  
+    creará input paramenter en housingLocationComponet para recibirlos desde 
+    homeComponent
+
+    Añadir Input al array imports de housingLocationComponet
+    Añadir CommonModule a imports del @Component
+    Añadir el parámetro dentro de export class 
+        define una variable del tipo interface con decorador @Input
+
+6. enlazar propiedades en el template        
+    actualizar la plantilla homeComponent para pasar datos al componente
+    housingLocationComponet
+
+7. utilizar los datos en housingLocationComponet
+
+    se hará referencia a los datos Input del interface con 
+    {{variable.subvariable }}

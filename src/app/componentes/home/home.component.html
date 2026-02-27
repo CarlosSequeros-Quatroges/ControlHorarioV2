@@ -1,0 +1,179 @@
+<app-navbar></app-navbar>
+<div *ngIf="registros">
+  <!--TITULO-->
+  <h3 class="text-left">REGISTROS DE JORNADA <span>
+      <input
+        type="month"
+        id="mes"
+        name="mes"
+        min="{{min}}"
+        max="{{max}}"
+        [formControl]="mes"
+        (ngModelChange)="modelChanged($event, 'mes')" />
+    </span>
+
+  </h3>
+
+  <!--TOTALES DEL MES-->
+
+  <div class="container">
+    <div class="row justify-content-left gap-2">
+      <div class="col-4">
+        <span class="position-relative"><b>Total</b></span>
+      </div>
+      <div class="col-1">
+        <a>
+          <span class="position-relative">{{ totalesMes.duracion |
+            min2hourMin }}</span>
+        </a>
+      </div>
+      <div class="col-1">
+        <a>
+          <span class>{{ totalesMes.jornada | min2hourMin}}</span>
+        </a>
+      </div>
+      <div class="col-1">
+        <a>
+          <span *ngIf="totalesMes.positivo" style="color:green">{{
+            totalesMes.diferencia |min2hourMin }}</span>
+          <span *ngIf="!totalesMes.positivo" style="color:red">-{{
+            totalesMes.diferencia |min2hourMin}}</span>
+        </a>
+      </div>
+    </div>
+
+    <div class="row justify-content-left gap-2">
+      <div class="col-4">
+        <span class="position-relative"><b>Incidencias</b></span>
+      </div>
+      <div class="col-1">
+        <a>
+          <span class="position-relative">{{ incidencias }}</span>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!--TOTALES DIA A DIA-->
+
+  <table class="table table-sm" *ngIf="totales">
+    <thead>
+      <tr>
+        <th scope="col"></th>
+        <th scope="col">Fecha</th>
+        <th scope="col"></th>
+        <th scope="col">Duracion</th>
+        <th scope="col">Jornada</th>
+        <th scope="col">Diferencia</th>
+      </tr>
+    </thead>
+    <tbody *ngFor="let total of totales; let i=index;">
+      <tr>
+        <!-- ICONO DEL DIA (FESTIVO, VACACIONES, REGISTROS, SIN REGISTROS (INCIDENCIA))-->
+        <td>
+          <p>
+            <!-- background-color: rgb(164, 251, 161);'
+                            -->
+            <a class="position-relative"
+              [ngClass]="[(registros|filtrar:'inicio':total.fecha).length>0
+              ? 'accion':'']"
+              [ngStyle]="{'background-color':
+              (registros|filtrar:'inicio':total.fecha).length>0
+              ?'#b1ffc3':'#ffff60',
+              'color':
+              (registros|filtrar:'inicio':total.fecha).length>0
+              ?'#007601':'#8a0000'}
+              "
+              *ngIf="total.tipo == 'J'"
+              data-bs-toggle="collapse"
+              [attr.data-bs-target]="'#collapse'+i"
+              aria-expanded="false"
+              [attr.aria-controls]="'collapse'+i">
+              <mat-icon
+                *ngIf="(registros|filtrar:'inicio':total.fecha).length>
+                0">format_list_bulleted</mat-icon>
+              <mat-icon
+                *ngIf="(registros|filtrar:'inicio':total.fecha).length
+                == 0">warning</mat-icon>
+              Registros
+              <span class="position-absolute top-0 start-100
+                translate-middle badge rounded-pill bg-success"
+                *ngIf="(registros|filtrar:'inicio':total.fecha).length>
+                0">
+                {{(registros|filtrar:'inicio':total.fecha).length}}
+              </span>
+              <span class="position-absolute top-0 start-100
+                translate-middle badge rounded-pill bg-danger"
+                *ngIf="(registros|filtrar:'inicio':total.fecha).length
+                ==0">
+                {{(registros|filtrar:'inicio':total.fecha).length}}
+              </span>
+
+            </a>
+
+            <a *ngIf="total.tipo =='F'" style='color: #0400f8;
+              background-color: #5fcff1;'><mat-icon>timer_off</mat-icon>
+              Festivo</a>
+            <a *ngIf="total.tipo =='V'" style='color:
+              #0400f8;background-color: #5fcff1;'>
+              <mat-icon>beach_access</mat-icon>
+              Vacaciones</a>
+          </p>
+
+          <div class="collapse" [id]="'collapse'+i"
+            *ngIf="(registros|filtrar:'inicio':total.fecha).length>
+            0">
+            <div class="container">
+              <div class="row justify-content-left gap-2 titulos">
+                <div class="col-2">
+                  <h6 class="position-relative">
+                    <span class="position-relative">Inicio</span>
+                  </h6>
+                </div>
+                <div class="col-2">
+                  <h6>
+                    <span class="position-relative">Final</span>
+                  </h6>
+                </div>
+                <div class="col-2">
+                  <h6>
+                    <span class> Duracion
+                    </span>
+                  </h6>
+                </div>
+              </div>
+            </div>
+            <app-registro
+              *ngFor="let registro of registros|filtrar:'inicio':total.fecha"
+              [datos]="datos"
+              [registro]="registro">
+            </app-registro>
+          </div>
+        </td>
+
+        <!-- fecha -->
+        <td>{{ total.fecha }}</td>
+        <td></td>
+        <!-- horas trabajadas -->
+        <td><span *ngIf="total.tipo == 'J'">{{ total.duracion
+            |duracion|date:"HH:mm"}}</span>
+        </td>
+        <!-- horas jornada a cumplir -->
+        <td><span *ngIf="total.tipo == 'J'">{{ total.jornada |
+            duracion
+            |
+            date:'HH:mm'}}</span></td>
+
+        <!-- diferencia positiva -->
+        <td *ngIf="total.positivo"><span *ngIf="total.tipo == 'J'"
+            style="color:green">{{
+            total.diferencia|duracion|date:'HH:mm' }}</span></td>
+        <!-- diferencia negativa -->
+        <td *ngIf="!total.positivo"><span *ngIf="total.tipo == 'J'"
+            style="color:red">-{{
+            total.diferencia|duracion|date:'HH:mm' }}</span></td>
+      </tr>
+    </tbody>
+  </table>
+
+</div>

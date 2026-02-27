@@ -1,0 +1,69 @@
+<app-navbar></app-navbar>
+<main class="form-signin">
+  <form [formGroup]="newPasswdForm" (ngSubmit)="graba()">
+
+    <img class="mb-4" src="../../../assets/logo_quatroges_fondoblanco.png"
+      alt width="200">
+    <h1 class="h5 mb-3 fw-normal">Cambio de clave</h1>
+
+    <div class="form-floating">
+      <input type="password" class="form-control" id="floatingOldPassword"
+        placeholder="Password"
+        formControlName="oldPassword">
+      <label for="floatingOldPassword">Clave anterior</label>
+    </div>
+    <div class="error-messages">
+      <ng-container *ngFor="let error of error_messages.password">
+        <div class="error-message"
+          *ngIf="newPasswdForm.get('oldPassword')?.hasError(error.type) &&
+          (newPasswdForm.get('oldPassword')?.dirty ||
+          newPasswdForm.get('oldPassword')?.touched)">
+          {{ error.message }}
+        </div>
+      </ng-container>
+    </div>
+
+    <div class="form-floating">
+      <input type="password" class="form-control" id="floatingNewPassword"
+        placeholder="Password"
+        formControlName="newPassword">
+      <label for="floatingNewPassword">Nueva clave</label>
+    </div>
+    <div class="error-messages">
+      <ng-container *ngFor="let error of error_messages.password">
+        <div class="error-message"
+          *ngIf="newPasswdForm.get('newPassword')?.hasError(error.type) &&
+          (newPasswdForm.get('newPassword')?.dirty ||
+          newPasswdForm.get('newPassword')?.touched)">
+          {{ error.message }}
+        </div>
+      </ng-container>
+    </div>
+
+    <div class="form-floating">
+      <input type="password" class="form-control"
+        id="floatingConfirmPassword" placeholder="Password"
+        formControlName="confirmPassword">
+      <label for="floatingConfirmPassword">Confirmar clave</label>
+    </div>
+    <div class="error-messages">
+      <ng-container *ngFor="let error of error_messages.password">
+        <div class="error-message"
+          *ngIf="newPasswdForm.get('confirmPassword')?.hasError(error.type)
+          && (newPasswdForm.get('confirmPassword')?.dirty ||
+          newPasswdForm.get('confirmPassword')?.touched)">
+          {{ error.message }}
+        </div>
+      </ng-container>
+    </div>
+
+    <p class="mt-5 mb-3 text-muted"></p>
+
+    <div class="checkbox mb-3">
+      <button class="w-100 btn btn-lg btn-primary validar" type="submit"
+        [disabled]="newPasswdForm.invalid">Validar</button>
+    </div>
+
+    <p class="mt-5 mb-3 text-muted">&copy; Microgestión software s.l. 2021</p>
+  </form>
+</main>
