@@ -1,16 +1,41 @@
+<app-navbar></app-navbar>
 <h2>Resumen de vacaciones</h2>
-<h4>Ejercicio: {{ ejercicio }}</h4>
+<h4>
+  <label for="select-year">Ejercicio:</label>
+
+  <select
+    id="select-year"
+    [formControl]="anio"
+    (change)="cargaRegistros(anio.value)"
+  >
+    <option [value]="null" disabled>Seleccione año</option>
+
+    @for (anio of anios; track anio) {
+      <option [value]="anio">{{ anio }}</option>
+    }
+  </select>
+</h4>
+<h5>
+  Dias asignados: {{ diasAsignados }}. Disfrutados:
+  {{ disfrutados }} Pendientes: {{ pendientes }}
+</h5>
 <table class="table table-striped">
   <thead>
     <tr>
       <th scope="col">Fecha inicio</th>
       <th scope="col">Días</th>
+      <th scope="col">Observaciones</th>
     </tr>
   </thead>
   <tbody>
     <tr *ngFor="let vac of vacaciones">
       <td>{{ vac.fecha }}</td>
       <td>{{ vac.dias }}</td>
+      @if (vac.observacion === "P") {
+        <td><mat-icon>timer</mat-icon>Pendiente</td>
+      } @else {
+        <td><mat-icon>check_circle</mat-icon>Disfrutado</td>
+      }
     </tr>
 
     <tr *ngIf="vacaciones.length === 0">
