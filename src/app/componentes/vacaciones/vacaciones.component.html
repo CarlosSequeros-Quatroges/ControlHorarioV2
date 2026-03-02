@@ -1,9 +1,14 @@
-<app-navbar></app-navbar>
+<app-navbar [ngClass]="presentacion()"></app-navbar>
 <h2>Resumen de vacaciones</h2>
+<button [ngClass]="presentacion()" (click)="listar()">
+  <i class="fas fa-print"></i>Listar
+</button>
+
 <h4>
-  <label for="select-year">Ejercicio:</label>
+  <label for="select-year">Ejercicio: </label>
 
   <select
+    [ngClass]="presentacion()"
     id="select-year"
     [formControl]="anio"
     (change)="cargaRegistros(anio.value)"
@@ -14,6 +19,7 @@
       <option [value]="anio">{{ anio }}</option>
     }
   </select>
+  <a [ngClass]="listado()">{{ ejercicio }}</a>
 </h4>
 <h5>
   Dias asignados: {{ diasAsignados }}. Disfrutados:
@@ -49,3 +55,6 @@
     </tr>
   </tbody>
 </table>
+<h6 [ngClass]="listado()">
+  Fecha de listado: {{ fechaListado() }} Usuario: {{ usuario.nombre }}
+</h6>

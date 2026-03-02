@@ -1,4 +1,10 @@
-import { Component, computed, OnInit, Signal } from '@angular/core';
+import {
+  Component,
+  HostListener,
+  OnInit,
+  signal,
+  WritableSignal,
+} from '@angular/core';
 import { CommonModule, DatePipe, formatDate } from '@angular/common';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 
@@ -9,6 +15,7 @@ import { RegistroVacaciones } from '../../interfaces/registro-vacaciones';
 import { Cosmos2datePipe } from '../../pipes/cosmos2date.pipe';
 import { MatIconModule } from '@angular/material/icon';
 import { NavbarComponent } from '../navbar/navbar.component';
+import { UsuarioModel } from '../../usuario.model';
 
 @Component({
   selector: 'app-vacaciones',
@@ -32,10 +39,14 @@ export class VacacionesComponent implements OnInit {
     new Date().getFullYear().toString(),
   );
 
+  presentacion: WritableSignal<string> = signal('');
+  listado: WritableSignal<string> = signal('oculto');
+
   constructor(
     private cosmos: CosmosService,
     private cosmos2date: Cosmos2datePipe,
     private datepipe: DatePipe,
+    public usuario: UsuarioModel,
   ) {}
 
   ngOnInit(): void {
@@ -48,6 +59,12 @@ export class VacacionesComponent implements OnInit {
     this.anio = new FormControl(this.anios[0]);
 
     this.cargaRegistros(this.anio.value || new Date().getFullYear().toString());
+
+    window.addEventListener('afterprint', () => {
+      console.log('afterprint event triggered');
+      this.presentacion.set('');
+      this.listado.set('oculto');
+    });
   }
 
   cargaRegistros(anio: string | null) {
@@ -90,5 +107,17 @@ export class VacacionesComponent implements OnInit {
     );
 
     console.log('Version 19-10-2021 22:00');
+  }
+
+  listar() {
+    this.presentacion.set('oculto');
+    this.listado.set('');
+    setTimeout(() => {
+      window.print();
+    }, 1000);
+  }
+
+  fechaListado(): string {
+    return this.datepipe.transform(new Date(), 'dd/MM/yyyy HH:mm:ss') || '';
   }
 }
