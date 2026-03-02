@@ -87,10 +87,14 @@ export class VacacionesComponent implements OnInit {
         this.totalDias = resp.totalDias;
         this.diasAsignados = resp.diasAsignados;
         this.disfrutados = resp.disfrutados;
+
+        console.log('resp.totalDias', resp.totalDias);
+        console.log('resp.disfrutados', resp.disfrutados);
+
         this.pendientes =
-          (resp.totalDias || 0) - (resp.disfrutados || 0) < 0
+          (resp.diasAsignados || 0) - (resp.disfrutados || 0) < 0
             ? 0
-            : (resp.totalDias || 0) - (resp.disfrutados || 0);
+            : (resp.diasAsignados || 0) - (resp.disfrutados || 0);
         this.desde = resp.desde;
         this.hasta = resp.hasta;
 
@@ -113,6 +117,7 @@ export class VacacionesComponent implements OnInit {
     this.presentacion.set('oculto');
     this.listado.set('');
     setTimeout(() => {
+      document.title = `Vacaciones ${this.ejercicio} - ${this.usuario.nombre}`;
       window.print();
     }, 1000);
   }

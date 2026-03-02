@@ -1,14 +1,17 @@
-<app-navbar [ngClass]="presentacion()"></app-navbar>
-<h2>Resumen de vacaciones</h2>
-<button [ngClass]="presentacion()" (click)="listar()">
-  <i class="fas fa-print"></i>Listar
-</button>
-
-<h4>
-  <label for="select-year">Ejercicio: </label>
+<app-navbar class="no-print"></app-navbar>
+<div class="contenedor-horizontal">
+  <h2>Resumen de vacaciones</h2>
+  <button class="no-print" (click)="listar()">
+    <i class="fas fa-print"></i>Listar
+  </button>
+</div>
+<h4 class="contenedor-horizontal-izquierda">
+  <label>Empleado: {{ usuario.nombre }}</label>
+  <label for="select-year">Ejercicio:</label>
+  <label class="only-print">{{ ejercicio }}</label>
 
   <select
-    [ngClass]="presentacion()"
+    class="no-print"
     id="select-year"
     [formControl]="anio"
     (change)="cargaRegistros(anio.value)"
@@ -19,12 +22,11 @@
       <option [value]="anio">{{ anio }}</option>
     }
   </select>
-  <a [ngClass]="listado()">{{ ejercicio }}</a>
 </h4>
-<h5>
+<h4>
   Dias asignados: {{ diasAsignados }}. Disfrutados:
   {{ disfrutados }} Pendientes: {{ pendientes }}
-</h5>
+</h4>
 <table class="table table-striped">
   <thead>
     <tr>
@@ -38,9 +40,14 @@
       <td>{{ vac.fecha }}</td>
       <td>{{ vac.dias }}</td>
       @if (vac.observacion === "P") {
-        <td><mat-icon>timer</mat-icon>Pendiente</td>
+        <td class="td-icon">
+          <mat-icon class="icon-amarillo">timer</mat-icon>Pendiente
+        </td>
       } @else {
-        <td><mat-icon>check_circle</mat-icon>Disfrutado</td>
+        <td class="td-icon">
+          <mat-icon class="no-print icon-verde">check_circle</mat-icon
+          >Disfrutado
+        </td>
       }
     </tr>
 
@@ -50,11 +57,17 @@
       </td>
     </tr>
     <tr *ngIf="vacaciones.length !== 0">
-      <td>Total días:</td>
-      <td>{{ totalDias }}</td>
+      <td class="totales">Total días:</td>
+      <td class="totales">{{ totalDias }}</td>
+      <td class="totales"></td>
     </tr>
   </tbody>
 </table>
-<h6 [ngClass]="listado()">
-  Fecha de listado: {{ fechaListado() }} Usuario: {{ usuario.nombre }}
+<h6 class="only-print">
+  <strong>
+    Fecha de listado: {{ fechaListado() }} Usuario:
+    {{
+      usuario.admin ? "Administrador " + usuario.admin_user : usuario.nombre
+    }}</strong
+  >
 </h6>
