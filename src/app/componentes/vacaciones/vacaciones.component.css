@@ -54,19 +54,22 @@ td.totales {
   color: orange;
 }
 
-.carta {
+.boton-icono {
   border: none;
   color: #ffffff;
   font-weight: bold;
   background-color: #042871;
-  width: 30%;
+  width: auto;
   display: block;
-  padding: 0rem 1rem;
+  padding: 0rem 2rem;
   border-radius: 1rem;
   box-shadow:
     3px 3px 8px #b1b1b1,
     -3px -3px 8px #ffffff;
   cursor: pointer;
+}
+.boton-icono > span {
+  margin-left: 1rem;
 }
 
 @media print {

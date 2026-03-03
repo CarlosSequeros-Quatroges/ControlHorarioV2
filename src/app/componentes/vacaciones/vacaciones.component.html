@@ -1,8 +1,8 @@
 <app-navbar class="no-print"></app-navbar>
 <div class="contenedor-horizontal">
   <h2>Resumen de vacaciones</h2>
-  <button class="no-print" (click)="listar()">
-    <i class="fas fa-print"></i>Listar
+  <button class="no-print boton-icono" (click)="listar()">
+    <i class="fas fa-print"></i><span>Listado</span>
   </button>
 </div>
 <h4 class="contenedor-horizontal-izquierda">
@@ -33,7 +33,7 @@
       <th scope="col">Fecha inicio</th>
       <th scope="col">Días</th>
       <th scope="col">Observaciones</th>
-      <th scope="col">Carta</th>
+      <th scope="col" class="no-print">Carta</th>
     </tr>
   </thead>
   <tbody>
@@ -50,8 +50,8 @@
           >Disfrutado
         </td>
       }
-      <td>
-        <button (click)="verCarta(vac)" class="carta">
+      <td class="no-print">
+        <button (click)="verCarta(vac)" class="boton-icono">
           <mat-icon>list</mat-icon>
         </button>
       </td>
