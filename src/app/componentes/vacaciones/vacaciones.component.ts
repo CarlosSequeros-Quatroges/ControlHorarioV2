@@ -16,6 +16,7 @@ import { Cosmos2datePipe } from '../../pipes/cosmos2date.pipe';
 import { MatIconModule } from '@angular/material/icon';
 import { NavbarComponent } from '../navbar/navbar.component';
 import { UsuarioModel } from '../../usuario.model';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-vacaciones',
@@ -47,6 +48,7 @@ export class VacacionesComponent implements OnInit {
     private cosmos2date: Cosmos2datePipe,
     private datepipe: DatePipe,
     public usuario: UsuarioModel,
+    public router: Router,
   ) {}
 
   ngOnInit(): void {
@@ -109,8 +111,6 @@ export class VacacionesComponent implements OnInit {
         });
       },
     );
-
-    console.log('Version 19-10-2021 22:00');
   }
 
   listar() {
@@ -124,5 +124,15 @@ export class VacacionesComponent implements OnInit {
 
   fechaListado(): string {
     return this.datepipe.transform(new Date(), 'dd/MM/yyyy HH:mm:ss') || '';
+  }
+
+  verCarta(datos: RegistroVacaciones) {
+    const fechainicio: string = datos.fecha;
+    const fechafin: string = datos.fecha;
+    const dias: number = datos.dias;
+
+    this.router.navigate(['/carta-vacaciones'], {
+      state: { data: datos },
+    });
   }
 }

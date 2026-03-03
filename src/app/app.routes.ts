@@ -8,6 +8,7 @@ import { RegistroJornadaComponent } from './componentes/registro-jornada/registr
 import { IncidenciasComponent } from './componentes/incidencias/incidencias.component';
 import { ChangePasswdComponent } from './componentes/change-passwd/change-passwd.component';
 import { VacacionesComponent } from './componentes/vacaciones/vacaciones.component';
+import { CartaVacacionesComponent } from './componentes/vacaciones/carta-vacaciones/carta-vacaciones.component';
 
 export const routes: Routes = [
   {
@@ -32,6 +33,12 @@ export const routes: Routes = [
     path: 'vacaciones',
     component: VacacionesComponent,
     title: 'Registro de vacaciones',
+    canActivate: [authGuard],
+  },
+  {
+    path: 'carta-vacaciones',
+    component: CartaVacacionesComponent,
+    title: 'carta de vacaciones',
     canActivate: [authGuard],
   },
   {

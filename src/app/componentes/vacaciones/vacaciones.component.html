@@ -18,7 +18,7 @@
   >
     <option [value]="null" disabled>Seleccione año</option>
 
-    @for (anio of anios; track anio) {
+    @for (anio of anios; track anio; let i = $index) {
       <option [value]="anio">{{ anio }}</option>
     }
   </select>
@@ -33,6 +33,7 @@
       <th scope="col">Fecha inicio</th>
       <th scope="col">Días</th>
       <th scope="col">Observaciones</th>
+      <th scope="col">Carta</th>
     </tr>
   </thead>
   <tbody>
@@ -49,6 +50,11 @@
           >Disfrutado
         </td>
       }
+      <td>
+        <button (click)="verCarta(vac)" class="carta">
+          <mat-icon>list</mat-icon>
+        </button>
+      </td>
     </tr>
 
     <tr *ngIf="vacaciones.length === 0">
