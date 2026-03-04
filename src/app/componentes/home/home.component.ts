@@ -1,9 +1,9 @@
 import { Cosmos2minPipe } from './../../pipes/cosmos2min.pipe';
 import { fileURLToPath } from 'node:url';
 import { Jornada } from './../../interfaces/jornada';
-import { Component, inject } from '@angular/core';
+import { Component, inject, TemplateRef } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
-import { Router,RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
@@ -29,34 +29,43 @@ import { DuracionPipe } from '../../pipes/duracion.pipe';
 import { RegistroComponent } from '../registro/registro.component';
 import { DifPipe } from '../../pipes/dif.pipe';
 import { Min2hourMinPipe } from '../../pipes/min2hour-min.pipe';
+import { Cosmos2datetimePipe } from '../../pipes/cosmos2datetime.pipe';
 
 @Component({
   selector: 'app-home',
-  imports: [ RouterModule,CommonModule,ReactiveFormsModule,
-    RegistroComponent,NavbarComponent,
+  imports: [
+    RouterModule,
+    CommonModule,
+    ReactiveFormsModule,
+    RegistroComponent,
+    NavbarComponent,
     MatIconModule,
-    DuracionPipe,DifPipe,Min2hourMinPipe,FiltrarPipe,SumPipe,SortPipe,Cosmos2datePipe
-
+    DuracionPipe,
+    DifPipe,
+    Min2hourMinPipe,
+    FiltrarPipe,
+    SumPipe,
+    SortPipe,
+    Cosmos2datePipe,
   ],
   templateUrl: './home.component.html',
-  styleUrl: './home.component.css'
+  styleUrl: './home.component.css',
 })
-
 export class HomeComponent {
-  public datos!: DatosCtrlRegistro
+  public datos!: DatosCtrlRegistro;
   enModo: typeof RegistroModo = RegistroModo;
 
-  public registros!: Registro[]
-  public totales!: Totales[]
+  public registros!: Registro[];
+  public totales!: Totales[];
   public date!: Date;
-  public totalesMes!: Totales
-  public incidencias!: number
-  public diasNoLaborables!: number
-  public meses!: string[]
+  public totalesMes!: Totales;
+  public incidencias!: number;
+  public diasNoLaborables!: number;
+  public meses!: string[];
 
-  mes!: FormControl
-  min!: string
-  max!: string
+  mes!: FormControl;
+  min!: string;
+  max!: string;
 
   usuario: UsuarioModel = inject(UsuarioModel);
   auth: AuthService = inject(AuthService);
@@ -66,43 +75,41 @@ export class HomeComponent {
   datepipe: DatePipe = inject(DatePipe);
   filtrar: FiltrarPipe = inject(FiltrarPipe);
   sum: SumPipe = inject(SumPipe);
-  sort:SortPipe = inject(SortPipe);
+  sort: SortPipe = inject(SortPipe);
   cosmos2datePipe: Cosmos2datePipe = inject(Cosmos2datePipe);
+  cosmos2datetimePipe: Cosmos2datetimePipe = inject(Cosmos2datetimePipe);
   Cosmos2minPipe: Cosmos2minPipe = inject(Cosmos2minPipe);
 
   constructor() {
-
     this.datos = {
       bloqueado: true,
       modo: this.enModo.REGISTRO,
-      administrador: false
+      administrador: false,
     };
   }
 
   ngOnInit() {
     this.datos = {
-      bloqueado:false,
+      bloqueado: false,
       modo: this.enModo.EDICION,
-      administrador: false
+      administrador: false,
     };
 
     if (this.usuario.admin) {
       this.datos.administrador = true;
     }
 
+    this.date = new Date();
+    this.mes = new FormControl(this.datepipe.transform(this.date, 'yyyy-MM'));
+    let YYYY: number = this.date.getFullYear() as number;
+    YYYY -= 1;
 
-    this.date = new Date()
-    this.mes = new FormControl(this.datepipe.transform(this.date,"yyyy-MM"));
-    let YYYY: number = this.date.getFullYear() as number
-    YYYY -= 1
+    this.max = this.datepipe.transform(this.date, 'yyyy-MM') as string;
+    this.date.setMonth(1);
+    this.date.setFullYear(YYYY);
+    this.min = this.datepipe.transform(this.date, 'yyyy-MM') as string;
 
-
-    this.max = this.datepipe.transform(this.date,"yyyy-MM") as string
-    this.date.setMonth(1)
-    this.date.setFullYear(YYYY)
-    this.min = this.datepipe.transform(this.date,"yyyy-MM") as string
-
-    this.date = new Date()
+    this.date = new Date();
 
     this.usuario = this.auth.leerUsuario();
     if (this.usuario.nombre === '') {
@@ -111,230 +118,300 @@ export class HomeComponent {
       return;
     }
 
-    this.cargaRegistros((this.date.getMonth()+1)+"/"+this.date.getFullYear());
-
+    this.cargaRegistros(
+      this.date.getMonth() + 1 + '/' + this.date.getFullYear(),
+    );
   }
 
-    public modelChanged(ev:Event, formName:any) {
+  public modelChanged(ev: Event, formName: any) {
+    if (formName == 'mes') {
+      this.date = new Date(this.mes.value + '-01' + ' 00:00:00');
 
-      if (formName == "mes") {
-        this.date =new Date(this.mes.value+"-01"+" 00:00:00")
+      let tmp: string = this.datepipe.transform(this.date, 'MM/yyyy') as string;
 
-        let tmp: string = this.datepipe.transform(this.date,"MM/yyyy") as string;
-
-        this.cargaRegistros(tmp);
-      }
+      this.cargaRegistros(tmp);
     }
-
+  }
 
   cargaRegistros(mes: string) {
-
     Swal.fire({
-      text:'Recuperando registros',
+      text: 'Recuperando registros',
       icon: 'info',
-      showConfirmButton: false
-    })
-    Swal.showLoading()
+      showConfirmButton: false,
+    });
+    Swal.showLoading();
 
     this.diasNoLaborables = 0;
 
+    this.cosmos.recuperaRegistrosMes(mes).subscribe(
+      (resp: RespRegistros) => {
+        this.max = this.datepipe.transform(
+          this.cosmos2datePipe.transform(resp.maxmes),
+          'yyyy-MM',
+        ) as string;
+        this.min = this.datepipe.transform(
+          this.cosmos2datePipe.transform(resp.minmes),
+          'yyyy-MM',
+        ) as string;
 
+        //dias con registros
+        this.registros = resp.registros;
+        if (!this.registros) {
+          this.registros = [];
+        }
 
-    this.cosmos.recuperaRegistrosMes(mes).subscribe((resp: RespRegistros) => {
+        //nº de registros con incidencias
+        this.incidencias = resp.incidencias;
+        if (!this.incidencias) {
+          this.incidencias = 0;
+        }
 
-      this.max = this.datepipe.transform(this.cosmos2datePipe.transform(resp.maxmes),"yyyy-MM") as string
-      this.min = this.datepipe.transform(this.cosmos2datePipe.transform(resp.minmes),"yyyy-MM") as string
+        this.totales = [];
 
+        //fechas con registro de jornada
+        if (resp.fechas) {
+          resp.fechas.forEach((valor: string, indice) => {
+            var tmp: Totales = {
+              fecha: '',
+              duracion: '',
+              jornada: '0',
+              diferencia: '0',
+              positivo: true,
+              tipo: 'J',
+            };
+            tmp.fecha = String(valor);
+            tmp.duracion = String(this.totalJornada(this.registros, valor));
 
-       //dias con registros
-      this.registros = resp.registros
-      if (!this.registros){
-        this.registros = [];
-      }
-
-
-      //nº de registros con incidencias
-      this.incidencias = resp.incidencias
-      if (!this.incidencias){
-        this.incidencias = 0
-      }
-
-
-      this.totales = []
-
-
-      //fechas con registro de jornada
-      if (resp.fechas) {
-        resp.fechas.forEach((valor: string,indice) => {
-
-            var tmp: Totales  = {fecha:'',duracion:'',jornada:'0',diferencia:'0', positivo:true,tipo:'J'}
-            tmp.fecha = String(valor)
-            tmp.duracion = String(this.totalJornada(this.registros,valor))
-            var jornadas: Jornada[] = resp.jornadas.filter((dia) => dia.fecha == valor)
+            var jornadas: Jornada[] = resp.jornadas.filter(
+              (dia) => dia.fecha == valor,
+            );
 
             if (jornadas.length > 0) {
-              tmp.jornada =  this.Cosmos2minPipe.transform(jornadas[0].duracion).toString()
-            }
-            else {tmp.jornada = '480'} // si no hay jornada -> 8h
+              tmp.jornada = this.Cosmos2minPipe.transform(
+                jornadas[0].duracion,
+              ).toString();
+            } else {
+              tmp.jornada = '480';
+            } // si no hay jornada -> 8h
 
-            tmp.diferencia = String( this.diferencia(Number(tmp.duracion),Number(tmp.jornada)))
-            tmp.positivo = (Number(tmp.duracion)>= Number(tmp.jornada))? true: false
+            tmp.diferencia = String(
+              this.diferencia(Number(tmp.duracion), Number(tmp.jornada)),
+            );
+            tmp.positivo =
+              Number(tmp.duracion) >= Number(tmp.jornada) ? true : false;
 
-            this.totales.push(tmp)
-        })
-      }
-
-      // dias de vacaciones
-      if (resp.vacaciones ){
-        resp.vacaciones.forEach( (valor:string,indice) => {
-          var tmp: Totales  = {fecha:valor,duracion:'0',jornada:'0',diferencia:'0', positivo:true, tipo:'V'}
-          this.totales.push(tmp)
-          this.diasNoLaborables += 1
-        })
-
-      }
-
-
-      // dias festivos por fin de semana
-      var findesemana: string[]= this.diasFinDeSemana()
-      if (findesemana){
-        findesemana.forEach( (valor:string,indice) => {
-          var tmp: Totales  = {fecha:valor,duracion:'0',jornada:'0',diferencia:'0', positivo:true, tipo:'F'}
-            if (this.filtrar.transform(this.totales,"fecha",valor).length == 0 ) {
-              this.totales.push(tmp)
-              this.diasNoLaborables += 1
-
-            }
-        })
-
-      }
-
-
-
-      //festivos
-      if (resp.festivos){
-        resp.festivos.forEach( (dia: string,indice) => {
-          var tmp: Totales  = {fecha:dia,duracion:'0',jornada:'0',diferencia:'0', positivo:true, tipo:'F'}
-          if (this.filtrar.transform(this.totales,"fecha",dia).length == 0 ) {
-            this.totales.push(tmp)
-            this.diasNoLaborables += 1
-          }
+            this.totales.push(tmp);
+          });
         }
-        )
-      }
 
-
-      //los dias que faltan añadir registro jornada con 0 horas realizadas en totales
-      var diasmes: string[] = this.diasMes()
-      diasmes.forEach( (dia:string,indice:number) => {
-        if (this.totales.filter(e => e.fecha === dia).length == 0){
-          var tmp: Totales  = {fecha:dia,duracion:'0',jornada:'390',diferencia:'390', positivo:false,tipo:'J'}
-
-          var jornadas: Jornada[] = resp.jornadas.filter((jornada) => jornada.fecha == dia)
-          if (jornadas.length > 0) {
-            tmp.jornada =  this.Cosmos2minPipe.transform(jornadas[0].duracion).toString()
-          }
-          else {tmp.jornada = '480'} // si no hay jornada -> 8h
-
-
-          this.totales.push(tmp)
-
+        // dias de vacaciones
+        if (resp.vacaciones) {
+          resp.vacaciones.forEach((valor: string, indice) => {
+            var tmp: Totales = {
+              fecha: valor,
+              duracion: '0',
+              jornada: '0',
+              diferencia: '0',
+              positivo: true,
+              tipo: 'V',
+            };
+            this.totales.push(tmp);
+            this.diasNoLaborables += 1;
+          });
         }
-      })
 
+        // dias festivos por fin de semana
+        var findesemana: string[] = this.diasFinDeSemana();
+        if (findesemana) {
+          findesemana.forEach((valor: string, indice) => {
+            var tmp: Totales = {
+              fecha: valor,
+              duracion: '0',
+              jornada: '0',
+              diferencia: '0',
+              positivo: true,
+              tipo: 'F',
+            };
+            if (
+              this.filtrar.transform(this.totales, 'fecha', valor).length == 0
+            ) {
+              this.totales.push(tmp);
+              this.diasNoLaborables += 1;
+            }
+          });
+        }
 
-      var diasLaborables = diasmes.length - this.diasNoLaborables
+        //festivos
+        if (resp.festivos) {
+          resp.festivos.forEach((dia: string, indice) => {
+            var tmp: Totales = {
+              fecha: dia,
+              duracion: '0',
+              jornada: '0',
+              diferencia: '0',
+              positivo: true,
+              tipo: 'F',
+            };
+            if (
+              this.filtrar.transform(this.totales, 'fecha', dia).length == 0
+            ) {
+              this.totales.push(tmp);
+              this.diasNoLaborables += 1;
+            }
+          });
+        }
 
-      this.totales = this.sort.transform(this.totales,"fecha",-1)
+        //los dias que faltan añadir registro jornada con 0 horas realizadas en totales
+        var diasmes: string[] = this.diasMes();
+        diasmes.forEach((dia: string, indice: number) => {
+          if (this.totales.filter((e) => e.fecha === dia).length == 0) {
+            var tmp: Totales = {
+              fecha: dia,
+              duracion: '0',
+              jornada: '390',
+              diferencia: '390',
+              positivo: false,
+              tipo: 'J',
+            };
 
-      this.totalesMes = {fecha:'',duracion:'',jornada:'0',diferencia:'0', positivo:true, tipo:''}
-      this.totalesMes.fecha =""
-      this.totalesMes.duracion = String(this.sum.transform(this.totales,'duracion'))
-      this.totalesMes.jornada = String(this.sum.transform(this.totales,'jornada'))
-      this.totalesMes.diferencia = String(this.diferencia(Number(this.totalesMes.duracion),Number(this.totalesMes.jornada)))
-      this.totalesMes.positivo = (Number(this.totalesMes.duracion) > Number(this.totalesMes.jornada))? true:false
+            var jornadas: Jornada[] = resp.jornadas.filter(
+              (jornada) => jornada.fecha == dia,
+            );
+            if (jornadas.length > 0) {
+              tmp.jornada = this.Cosmos2minPipe.transform(
+                jornadas[0].duracion,
+              ).toString();
+              tmp.diferencia = tmp.jornada;
 
+              let tmpdate: string =
+                this.datepipe.transform(new Date(), 'dd/MM/yyyy') || '';
+              if (dia == tmpdate) {
+                if (resp.registro_actual && resp.registro_actual.inicio) {
+                  //calcula el tiempo transcurrido desde el inicio (jornada no finalizada)
+                  let date1 = new Date(
+                    this.cosmos2datetimePipe.transform(
+                      resp.registro_actual.inicio,
+                    ),
+                  );
+                  let time = new Date().getTime() - date1.getTime();
+                  let duracion: number = parseInt(String(time / 60000), 10);
+                  console.log(duracion);
+                  tmp.duracion = duracion.toString();
+                  console.log(tmp.jornada);
+                  tmp.diferencia = (
+                    Number(tmp.jornada) - Number(tmp.duracion)
+                  ).toString();
+                }
+              }
+            } else {
+              tmp.jornada = '480';
+            } // si no hay jornada -> 8h
 
-      Swal.close()
+            this.totales.push(tmp);
+          }
+        });
 
+        var diasLaborables = diasmes.length - this.diasNoLaborables;
 
-    }, (err) => {
-      Swal.close()
+        this.totales = this.sort.transform(this.totales, 'fecha', -1);
 
-      Swal.fire({
-        text:err,
-        icon: 'info',
-      })
+        this.totalesMes = {
+          fecha: '',
+          duracion: '',
+          jornada: '0',
+          diferencia: '0',
+          positivo: true,
+          tipo: '',
+        };
+        this.totalesMes.fecha = '';
+        this.totalesMes.duracion = String(
+          this.sum.transform(this.totales, 'duracion'),
+        );
+        this.totalesMes.jornada = String(
+          this.sum.transform(this.totales, 'jornada'),
+        );
+        this.totalesMes.diferencia = String(
+          this.diferencia(
+            Number(this.totalesMes.duracion),
+            Number(this.totalesMes.jornada),
+          ),
+        );
+        this.totalesMes.positivo =
+          Number(this.totalesMes.duracion) > Number(this.totalesMes.jornada)
+            ? true
+            : false;
 
-    });
+        Swal.close();
+      },
+      (err) => {
+        Swal.close();
+
+        Swal.fire({
+          text: err,
+          icon: 'info',
+        });
+      },
+    );
   }
 
-  totalJornada(registros: Registro[], fecha: string){
-    var filtrados = this.filtrar.transform(this.registros,"inicio",fecha)
-    var suma = this.sum.transform(filtrados,"duracion")
-    return Number(suma)
+  totalJornada(registros: Registro[], fecha: string) {
+    var filtrados = this.filtrar.transform(this.registros, 'inicio', fecha);
+    var suma = this.sum.transform(filtrados, 'duracion');
+    return Number(suma);
   }
 
-  diferencia(a: number, b:number) {
-    return  (a > b) ? a-b: b-a
+  diferencia(a: number, b: number) {
+    return a > b ? a - b : b - a;
   }
 
-  diasFinDeSemana() : string[] {
-
-    var fecha  = this.datepipe.transform(this.date,"yyyy-MM-01") as string
-    var my_date = String(this.datepipe.transform(new Date(fecha),"yyyy-MM-dd")).split('-')
+  diasFinDeSemana(): string[] {
+    var fecha = this.datepipe.transform(this.date, 'yyyy-MM-01') as string;
+    var my_date = String(
+      this.datepipe.transform(new Date(fecha), 'yyyy-MM-dd'),
+    ).split('-');
     var year = parseInt(my_date[0]);
-    var month = parseInt(my_date[1])-1;
+    var month = parseInt(my_date[1]) - 1;
     var today = new Date();
 
-    var findesemana: string[]  = [];
+    var findesemana: string[] = [];
 
-    for (var i = 1; i <= new Date(year, month+1, 0).getDate(); i++)
-    {
+    for (var i = 1; i <= new Date(year, month + 1, 0).getDate(); i++) {
       var date = new Date(year, month, i);
 
       if (date.getTime() > today.getTime()) {
         break;
       }
 
-      if (date.getDay() == 6)
-      {
-        findesemana.push(  String(this.datepipe.transform(date,'dd/MM/yyyy')));
+      if (date.getDay() == 6) {
+        findesemana.push(String(this.datepipe.transform(date, 'dd/MM/yyyy')));
+      } else if (date.getDay() == 0) {
+        findesemana.push(String(this.datepipe.transform(date, 'dd/MM/yyyy')));
       }
-      else if (date.getDay() == 0)
-      {
-        findesemana.push(String(this.datepipe.transform(date,'dd/MM/yyyy')));
-      }
-    };
-
+    }
 
     return findesemana;
-
   }
 
-  diasMes() : string[] {
-    var fecha  = this.datepipe.transform(this.date,"yyyy-MM-01") as string
-    var my_date = String(this.datepipe.transform(new Date(fecha),"yyyy-MM-dd")).split('-')
+  diasMes(): string[] {
+    var fecha = this.datepipe.transform(this.date, 'yyyy-MM-01') as string;
+    var my_date = String(
+      this.datepipe.transform(new Date(fecha), 'yyyy-MM-dd'),
+    ).split('-');
     var year = parseInt(my_date[0]);
-    var month = parseInt(my_date[1])-1;
+    var month = parseInt(my_date[1]) - 1;
     var today = new Date();
 
-    var diasmes: string[]  = [];
+    var diasmes: string[] = [];
 
-    for (var i = 1; i <= new Date(year, month+1, 0).getDate(); i++)
-    {
+    for (var i = 1; i <= new Date(year, month + 1, 0).getDate(); i++) {
       var date = new Date(year, month, i);
 
       if (date.getTime() > today.getTime()) {
         break;
       }
-      diasmes.push(String(this.datepipe.transform(date,'dd/MM/yyyy')));
-    };
+      diasmes.push(String(this.datepipe.transform(date, 'dd/MM/yyyy')));
+    }
 
     return diasmes;
-
   }
-
-
-
 }
