@@ -1,0 +1,28 @@
+<app-navbar></app-navbar>
+<div>
+  <h3 class="text-left">REGISTROS CON INDICENCIAS
+    <span>
+      <input
+        type="month"
+        id="mes"
+        name="mes"
+        min="{{min}}"
+        max="{{max}}"
+        [formControl]="mes"
+        (ngModelChange)="modelChanged($event, 'mes')" />
+    </span>
+  </h3>
+
+  <!-- REGISTROS ANTERIORES DEL DÍA-->
+  <app-registro
+    *ngFor="let registro of incidencias"
+    [datos]="datos"
+    [registro]="registro">
+  </app-registro>
+  <hr>
+</div>
+<div class="float-end mt-3">
+  <h5><span class='d-sm-none d-md-inline badge bg-success'
+      style="color:#ffff" (click)="actualizaRegistros()"><i
+        class="fas fa-save"></i> Actualizar registros</span></h5>
+</div>

@@ -26,7 +26,7 @@ export class CosmosService {
     private auth: AuthService,
   ) {}
 
-  recuperaRegistrosDia(): Observable<RespRegistros> {
+  recuperaRegistrosDia(fecha: string): Observable<RespRegistros> {
     var usuario: UsuarioModel = this.auth.leerUsuario();
 
     const headers = new HttpHeaders()
@@ -40,7 +40,7 @@ export class CosmosService {
 
     return this.http
       .get<RespRegistros>(
-        `${this.url}/recupera-registros-dia?email=${usuario.email}&empresa=${usuario.codigo}&matricula=${usuario.matricula}`,
+        `${this.url}/recupera-registros-dia?email=${usuario.email}&empresa=${usuario.codigo}&matricula=${usuario.matricula}&fecha=${fecha}`,
         { headers },
       )
       .pipe(
@@ -128,6 +128,43 @@ export class CosmosService {
       .pipe(
         map((resp) => {
           return resp;
+        }),
+        catchError((err) => {
+          return throwError(err.status + ' ' + err.statusText);
+        }),
+      );
+  }
+
+  subeCarta(
+    empresa: string,
+    matricula: string,
+    fecha: string,
+    b64: string,
+  ): Observable<String> {
+    const headers = new HttpHeaders()
+      .append('Content-Type', 'application/json')
+      .append('Access-Control-Allow-Methods', 'POST')
+      .append('Access-Control-Allow-Origin', '*')
+      .append(
+        'Access-Control-Allow-Headers',
+        'origin, content-type, accept,authorization,securityToken,access-control-allow-origin',
+      );
+
+    const data = {
+      empresa: empresa,
+      matricula: matricula,
+      fecha: fecha,
+      base64: b64,
+    };
+
+    return this.http
+      .post<RespBase>(`${this.url}/subir-carta`, data, { headers })
+      .pipe(
+        map((resp) => {
+          if (resp.errnum == 0) {
+            return '';
+          }
+          return resp.errdesc + '(' + resp.errnum + ')';
         }),
         catchError((err) => {
           return throwError(err.status + ' ' + err.statusText);

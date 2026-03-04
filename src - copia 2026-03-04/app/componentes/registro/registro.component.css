@@ -1,0 +1,44 @@
+.badge:hover.accion {
+  background-color: #0131f1 !important;
+}
+.badge.accion {
+  color: white !important;
+}
+
+.mat-form-field {
+  width: 50px !important;
+}
+
+.container{
+  width: 100%;
+  display:flex;
+  padding:1px;
+  /*border: 1px solid rgb(0, 255, 34) ;*/
+}
+.box{
+  width:50%;
+  min-width: 300px;
+  flex-wrap:wrap;
+  margin:0px;
+ /* border: 1px solid red;*/
+}
+.box2{
+  width:50%;
+  min-width: 150px;
+  flex-wrap:wrap;
+  margin:0px;
+}
+
+.hr{
+  size:2;
+  width: 90%;
+  color:#1789fa;
+}
+.mat-icon {
+  transform: scale(0.7);
+}
+.relative {
+  position: relative;
+  left: -20px;
+  top: -20px;
+}

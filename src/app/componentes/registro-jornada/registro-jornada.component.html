@@ -1,14 +1,35 @@
 <app-navbar></app-navbar>
 <div *ngIf="registroActual">
   <p class="text-end">{{ date | date:"dd \'de' MMMM \'de' yyyy HH:mm:ss"}}</p>
-  <h3 class="text-left">REGISTRO DE JORNADA</h3>
+  <h3 class="d-flex justify-content-between">REGISTRO DE JORNADA
+    <div>
+      <label>Otras fechas:</label>
+      <input
+      type="date"
+      id="dia"
+      name="dia"
+      min="{{minDia}}"
+      max="{{maxDia}}"
+      [formControl]="dia"
+      (ngModelChange)="modelChanged($event, 'dia')" />
+    </div>
+  </h3>
   <div *ngIf="laborable == 'L'">
 
     <!-- REGISTRO ACTUAL -->
-    <app-registro
-      [datos]="datosActual"
-      [registro]="registroActual"
-      (actualizar)="actualizarRegistro(0)"></app-registro>
+    <div style="display:flex; flex-direction: row; justify-content: center; align-items: center">
+      <app-registro
+        [datos]="datosActual"
+        [registro]="registroActual"
+        (actualizar)="actualizarRegistro(-1)">
+      </app-registro>
+      @if(isAnterior) {
+      <h5><span class='d-sm-none d-md-inline badge bg-success accion'
+        style="color:#ffff" (click)="grabarRegistros()"><i
+          class="fas fa-save"></i> Grabar registros</span>
+        </h5>
+      }
+    </div>
     <hr>
     <!-- DURACION JORNADA ACTUAL -->
     <div class="row gap-2 mt-2 justify-content-left">
@@ -28,6 +49,7 @@
     <app-registro *ngFor="let registro of registros; let i = index"
       [datos]="datos" [registro]="registro"
       (actualizar)="actualizarRegistro(i)"></app-registro>
+
 
     <hr>
 

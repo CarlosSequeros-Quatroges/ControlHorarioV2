@@ -20,9 +20,41 @@
     [registro]="registro">
   </app-registro>
   <hr>
+  <!--<div class="float-end mt-3">-->
+  <div class="float-end mt-3">
+    <h5><span class='d-sm-none d-md-inline badge bg-success'
+        style="color:#ffff" (click)="actualizaRegistros()"><i
+          class="fas fa-save"></i> Actualizar registros</span></h5>
+  </div>
+
 </div>
-<div class="float-end mt-3">
-  <h5><span class='d-sm-none d-md-inline badge bg-success'
-      style="color:#ffff" (click)="actualizaRegistros()"><i
-        class="fas fa-save"></i> Actualizar registros</span></h5>
+
+<!--  pruebas añadir registro fecha atrasada
+<hr>
+
+<h3 class="text-left">Registro jornada fecha atrasada
+  <div>
+    <input
+      type="date"
+      id="dia"
+      name="dia"
+      min="02/01/2026"
+      max="07/01/2026"
+      [formControl]="dia"
+      (ngModelChange)="modelChanged($event, 'dia')" />
+
+  </div>
+  <div>
+    <app-registro
+      [datos]="datosNew"
+      [registro]="registroNew">
+    </app-registro>
+    <div class="float-end mt-3">
+    <h5><span class='d-sm-none d-md-inline badge bg-success'
+        style="color:#ffff" (click)="addRegistroNuevo()"><i
+          class="fas fa-save"></i> Grabar registros</span></h5>
+  </div>
 </div>
+
+</h3>
+-->

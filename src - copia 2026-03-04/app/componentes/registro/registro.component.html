@@ -1,0 +1,228 @@
+<!-- VISUALIZACIÓN EN MODO REGISTRO DE JORNADA O EDICION DE REGISTROS. BOTONES ENTRADA SALIDA Y MARCAS DE INCIDENCIA-->
+<hr class="hr">
+<div class="container"
+  *ngIf="datos.modo == enModo.REGISTRO || datos.modo == enModo.EDICION">
+
+  <!-- grupo  campos registro -->
+  <div class="row justify-content-center ">
+    <!-- GRUPO FECHA Y DURACION Y VALIDAR PENDIENTES-->
+    <div class="box">
+      <div class="row justify-content-center ">
+
+        <!-- FECHA DEL REGISTRO -->
+        <div class="box2" *ngIf="datos.modo == enModo.EDICION">
+          <h6>
+            <span class="badge bg-secondary ">
+              Fecha:
+              {{(registro.fecha)?(registro.fecha|cosmos2date|date:"dd/MM/yyyy"):''}}
+            </span>
+          </h6>
+        </div>
+
+        <!-- GRUPO CONTROLES DURACION -->
+        <div class="box2">
+
+          <!-- VISUALIZA DURACIÓN DEL REGISTRO. SOLO CUANDO EL REGISTRO YA ESTA BLOQUEADO-->
+          <div class="col-1"
+            *ngIf="datos.bloqueado || datos.modo == enModo.EDICION">
+            <h6>
+              <span class="badge bg-secondary position-relative">
+                Duración: {{
+                (registro.duracion)? ( registro.duracion | duracion
+                |date:'HH:mm') : '__:__'}}
+                <span class="position-absolute top-0 start-0
+                  translate-middle
+                  p-2
+                  bg-warning border border-light rounded-circle"
+                  *ngIf="!registro.inicio && datos.bloqueado">
+                </span>
+              </span>
+              <span class="relative">
+                <i class="fa fa-check-circle " style="color:green"
+                  aria-hidden="true"
+                  *ngIf="registro.validado == 'S' && registro.usuario_validado == registro.matricula"></i>
+                <i class="fa fa-user-tie " style="color:rgb(10, 63, 0)"
+                  aria-hidden="true"
+                  *ngIf="registro.validado == 'S' && registro.usuario_validado != registro.matricula"></i>
+                <i class="fa fa-pause-circle" style="color:red"
+                  aria-hidden="true" *ngIf="registro.validado == 'P'"></i>
+              </span>
+            </h6>
+          </div>
+        </div>
+
+        <!-- VALIDAR PENDIENTES -->
+        <div class="col-1"
+          *ngIf="datos.modo == enModo.REGISTRO && registro.validado == 'P' && datos.administrador">
+          <h6 class="position-relative">
+            <span class="badge bg-warning text-dark accion"
+              (click)="validar()">Validar</span>
+          </h6>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- HORAS DE ENTRADA SALIDA-->
+    <div class="box">
+
+      <div class="row justify-content-center ">
+
+        <!-- GRUPO CONTROLES ENTRADA-->
+        <div class="box2">
+
+          <!-- VISUALIZA HORA DE ENTRADA -->
+          <div class="col-1">
+            <h6>
+              <span class="badge bg-secondary position-relative">Hora
+                inicio:{{(registro.inicio)?(registro.inicio| cosmos2datetime
+                |date:'HH:mm'): '__:__'}}
+                <span class="position-absolute top-0 start-0
+                  translate-middle
+                  p-2
+                  bg-danger border border-light rounded-circle"
+                  *ngIf="!registro.inicio  && datos.bloqueado">
+                </span>
+              </span>
+              <span class="relative">
+                <i class="fa fa-user" style="color:rgb(23, 0, 231)"
+                  aria-hidden="true"
+                  *ngIf="registro.manual_inicio == 'S' && registro.usuario_inicio == registro.matricula"></i>
+                <i class="fa fa-user-tie" style="color:rgb(10, 63, 0)"
+                  aria-hidden="true"
+                  *ngIf="registro.manual_inicio == 'S' && registro.usuario_inicio != registro.matricula"></i>
+              </span>
+            </h6>
+          </div>
+
+          <!-- BOTON REGISTRO ENTRADA REGISTRO  NORMAL POR USUARIO VALIDADO-->
+          <div class="col-1"
+            *ngIf="datos.modo == enModo.REGISTRO && !datos.bloqueado">
+            <h6 class="position-relative">
+              <span class="badge bg-success text-dark accion"
+                (click)="registraInicio()"
+                *ngIf="!datos.bloqueado && ! registro?.inicio">Entrada</span>
+            </h6>
+          </div>
+
+          <!-- BOTON EDITAR ENTRADA-->
+          <div class="col-1"
+            *ngIf="datos.modo == enModo.EDICION && ! hayInicio">
+            <h6>
+              <label for="horaInicio">Seleccionar</label>
+              <input
+                type="time"
+                id="horaEntrada"
+                name="horaEntrada"
+                [formControl]="horaInicio"
+                (ngModelChange)="modelChanged($event, 'horaEntrada')" />
+            </h6>
+          </div>
+        </div>
+
+        <!-- GRUPO CONTROLES SALIDA-->
+        <div class="box2">
+
+          <!-- VISUALIZA HORA DE SALIDA -->
+          <div class="col-1">
+            <h6>
+              <span class="badge bg-secondary position-relative"> Hora Fin: {{
+                (registro.final)? (registro.final | cosmos2datetime |
+                date:'HH:mm'): '__:__'}}
+                <span class="position-absolute top-0 start-100
+                translate-middle
+                p-2 bg-danger border border-light rounded-circle"
+                  *ngIf="!registro?.final && datos.bloqueado">
+                </span>
+              </span>
+              <span class="relative">
+                <i class="fa fa-user" style="color:rgb(23, 0, 231)"
+                  aria-hidden="true"
+                  *ngIf="registro.manual_final == 'S' && registro.usuario_inicio == registro.matricula"></i>
+                <i class="fa fa-user-tie" style="color:rgb(10, 63, 0)"
+                  aria-hidden="true"
+                  *ngIf="registro.manual_final == 'S' && registro.usuario_inicio != registro.matricula"></i>
+              </span>
+            </h6>
+
+            <!-- BOTON REGISTRO SALIDA-->
+            <div class="col-1"
+              *ngIf="datos.modo == enModo.REGISTRO && ! datos.bloqueado">
+              <h6><span class="badge bg-danger text-dark accion"
+                  (click)="registraFinal()"
+                  *ngIf="!datos.bloqueado && ! registro.final">Salida</span></h6>
+            </div>
+
+            <!-- BOTON EDITAR SALIDA-->
+            <div class="col-1"
+              *ngIf="datos.modo == enModo.EDICION && ! hayFinal">
+              <h6>
+                <label for="horaInicio">Seleccionar</label>
+                <input
+                  type="time"
+                  id="horaSalida"
+                  name="horaSalida"
+                  [formControl]="horaFinal"
+                  (ngModelChange)="modelChanged($event, 'horaSalida')" />
+              </h6>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+<!-- VISUALIZACIÓN EN MODO LISTADO-->
+<div class="container" *ngIf="datos.modo == enModo.LISTADO">
+  <div class="row justify-content-left gap-2">
+
+    <!-- VISUALIZA HORA DE ENTRADA -->
+    <div class="col-2">
+      <h6 class="position-relative">
+        <span class="position-relative">{{
+          (registro.inicio)?
+          (registro.inicio| cosmos2datetime |date:'HH:mm'): '__:__'}}
+          <span class="position-absolute top-0 start-0
+            translate-middle
+            p-2
+            bg-danger border border-light rounded-circle"
+            *ngIf="!registro.inicio && datos.bloqueado">
+          </span>
+        </span>
+      </h6>
+    </div>
+
+    <!-- VISUALIZA HORA DE SALIDA -->
+    <div class="col-2">
+      <h6>
+        <span class="position-relative">{{
+          (registro.final)? (registro.final | cosmos2datetime
+          |date:'HH:mm'):
+          '__:__'}}
+          <span class="position-absolute top-0 start-100
+            translate-middle
+            p-2 bg-danger border border-light rounded-circle"
+            *ngIf="!registro.final && datos.bloqueado">
+          </span>
+        </span>
+      </h6>
+    </div>
+
+    <!-- VISUALIZA DURACIÓN DEL REGISTRO. SOLO CUANDO EL REGISTRO YA ESTA BLOQUEADO-->
+    <div class="col-2" *ngIf="datos.bloqueado">
+      <h6>
+        <span class>
+          {{ (registro.duracion)?
+          ( registro.duracion | duracion |
+          date:'HH:mm') : '__:__'}}</span>
+      </h6>
+    </div>
+
+  </div>
+</div>

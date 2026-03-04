@@ -30,7 +30,7 @@ export class RegistroComponent {
   @Input() datos!: DatosCtrlRegistro
   @Input() registro!: Registro
 
-  @Output () actualizar: EventEmitter<string> = new EventEmitter();
+  @Output () actualizar: EventEmitter<number> = new EventEmitter();
   enModo: typeof RegistroModo = RegistroModo;
 
   datepipe: DatePipe = inject(DatePipe);
@@ -47,15 +47,7 @@ export class RegistroComponent {
   }
 
   ngOnInit(): void {
-
-    if (this.registro?.inicio) {
-      this.hayInicio = true;
-    }
-    if (this.registro?.final) {
-      this.hayFinal = true;
-    }
-
-    this.registro.actualizar = false;
+    this.reinicia()
   }
 
 
@@ -66,16 +58,17 @@ export class RegistroComponent {
 
     if (formName == "horaEntrada") {
       //revisar fecha registro
-      var date1 =new Date(this.cosmos2date.transform(String(this.registro.final+" 00:00:00")))
+      var date1 =new Date(this.cosmos2date.transform(String(this.registro.fecha+" 00:00:00")))
 
       var inicio =  String(this.datepipe.transform(date1,"dd/MM/yyyy"))+" "+this.horaInicio.value+":00";
 
 
       this.registro.inicio = inicio;
       this.registro.modoIniFinAutoMan = "IM";
+
     }
     else  {
-      var date1 =new Date(this.cosmos2date.transform(String(this.registro.inicio+" 00:00:00")))
+      var date1 =new Date(this.cosmos2date.transform(String(this.registro.fecha+" 00:00:00")))
       var final =  String(this.datepipe.transform(date1,"dd/MM/yyyy"))+" "+this.horaFinal.value+":00";
       this.registro.final = final;
       this.registro.modoIniFinAutoMan = "FM";
@@ -84,7 +77,6 @@ export class RegistroComponent {
 
     this.calculaDuracion();
     this.actualizar.emit();
-
   }
   //----------------------------------------------
 
@@ -156,6 +148,7 @@ export class RegistroComponent {
   }
 
   validar() {
+
     this.registro.modoIniFinAutoMan = "VA";
     Swal.fire({
       text:'¿Validar el registro manual pendiente?',
@@ -167,6 +160,7 @@ export class RegistroComponent {
       if (resultado.value) {
         this.registro.validado = "S"
         this.registro.modoIniFinAutoMan = "VA"
+
         this.actualizar.emit();
       }
     })
@@ -175,4 +169,20 @@ export class RegistroComponent {
 
   }
 
+
+  public reinicia() {
+
+    this.hayInicio = false;
+    this.hayFinal = false;
+
+    if (this.registro?.inicio) {
+      this.hayInicio = true;
+    }
+    if (this.registro?.final) {
+      this.hayFinal = true;
+    }
+
+    this.registro.actualizar = false;
+
+  }
 }

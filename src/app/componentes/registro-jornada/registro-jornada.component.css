@@ -8,3 +8,15 @@ app-footer{
   background-color: darkgray;
   z-index: 1000;
 }
+label {
+  margin-right: 10px;
+}
+
+
+#btnGrabar {
+  float: right;
+}
+
+.badge:hover.accion {
+  background-color: #0131f1 !important;
+}

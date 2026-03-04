@@ -1,0 +1,55 @@
+<app-navbar></app-navbar>
+<div *ngIf="registroActual">
+  <p class="text-end">{{ date | date:"dd \'de' MMMM \'de' yyyy HH:mm:ss"}}</p>
+  <h3 class="text-left">REGISTRO DE JORNADA</h3>
+  <div *ngIf="laborable == 'L'">
+
+    <!-- REGISTRO ACTUAL -->
+    <app-registro
+      [datos]="datosActual"
+      [registro]="registroActual"
+      (actualizar)="actualizarRegistro(0)"></app-registro>
+    <hr>
+    <!-- DURACION JORNADA ACTUAL -->
+    <div class="row gap-2 mt-2 justify-content-left">
+      <div class="col-2"><h3>Jornada:</h3></div>
+      <div class="col-2">
+        <h5>
+          <span class="badge bg-success">{{jornada | duracion |
+            date:'HH:mm'}}</span>
+        </h5>
+      </div>
+    </div>
+
+    <hr>
+    <!-- REGISTROS ANTERIORES DEL DÍA-->
+    <h3 class="text-left mt-3">Registros día {{date | date: "dd/MM/yyyy"}}</h3>
+
+    <app-registro *ngFor="let registro of registros; let i = index"
+      [datos]="datos" [registro]="registro"
+      (actualizar)="actualizarRegistro(i)"></app-registro>
+
+    <hr>
+
+  </div>
+
+  <!--                    FESTIVO O VACACIONES        -->
+
+  <div *ngIf="laborable !='L'">
+    <div class="p-5 mb-4 bg-success rounded-3"
+      style="background:linear-gradient(0deg, rgba(0, 84, 240, 0.294) 0%,
+          rgb(62, 130, 255) 100%);">
+      <div class="container-fluid py-5">
+        <h1 class="display-5 fw-bold text-center text-light">DIA NO
+          LABORABLE</h1>
+        <p class="col-md-8 fs-4 text-light text-center" *ngIf="laborable
+                  == 'F'">Motivo:
+          <span
+            class="badge" style="background-color: #a74242"> FESTIVO</span></p>
+        <p class="col-md-8 fs-4 text-light text-center" *ngIf="laborable
+                  == 'V'">Motivo: <span
+            class="badge" style="background-color: #003ca1;">
+            VACACIONES</span></p>
+      </div>
+    </div>
+  </div>

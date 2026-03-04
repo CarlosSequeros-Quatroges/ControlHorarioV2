@@ -86,6 +86,11 @@ export class HomeComponent {
       administrador: false
     };
 
+    if (this.usuario.admin) {
+      this.datos.administrador = true;
+    }
+
+
     this.date = new Date()
     this.mes = new FormControl(this.datepipe.transform(this.date,"yyyy-MM"));
     let YYYY: number = this.date.getFullYear() as number
@@ -178,8 +183,6 @@ export class HomeComponent {
             this.totales.push(tmp)
         })
       }
-      console.log("totales")
-      console.log(this.totales)
 
       // dias de vacaciones
       if (resp.vacaciones ){
@@ -264,9 +267,6 @@ export class HomeComponent {
       })
 
     });
-
-
-    console.log("Version 19-10-2021 22:00");
   }
 
   totalJornada(registros: Registro[], fecha: string){

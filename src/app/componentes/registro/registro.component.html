@@ -21,7 +21,6 @@
 
         <!-- GRUPO CONTROLES DURACION -->
         <div class="box2">
-
           <!-- VISUALIZA DURACIÓN DEL REGISTRO. SOLO CUANDO EL REGISTRO YA ESTA BLOQUEADO-->
           <div class="col-1"
             *ngIf="datos.bloqueado || datos.modo == enModo.EDICION">
@@ -52,8 +51,10 @@
         </div>
 
         <!-- VALIDAR PENDIENTES -->
+        <!--<div class="col-1"
+          *ngIf="datos.modo == enModo.REGISTRO && registro.validado == 'P' && datos.administrador">-->
         <div class="col-1"
-          *ngIf="datos.modo == enModo.REGISTRO && registro.validado == 'P' && datos.administrador">
+          *ngIf="registro.validado == 'P' && datos.administrador">
           <h6 class="position-relative">
             <span class="badge bg-warning text-dark accion"
               (click)="validar()">Validar</span>

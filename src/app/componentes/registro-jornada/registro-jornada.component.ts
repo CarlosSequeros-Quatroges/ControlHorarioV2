@@ -1,5 +1,7 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, ViewChild } from '@angular/core';
 import { Router, RouterModule, ActivatedRoute } from '@angular/router';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
+
 import Swal from 'sweetalert2';
 
 import { AuthService } from '../../services/auth.service';
@@ -15,11 +17,13 @@ import { RegistroModo } from '../../interfaces/registro-modo';
 import { DuracionPipe } from '../../pipes/duracion.pipe';
 import { FooterComponent } from "../footer/footer.component";
 import { NavbarComponent } from "../navbar/navbar.component";
+import { MatFormFieldModule } from '@angular/material/form-field';
+import localeEs from '@angular/common/locales/es';
 
 
 @Component({
   selector: 'app-registro-jornada',
-  imports: [RouterModule, DatePipe, DuracionPipe, CommonModule, RegistroComponent, FooterComponent, NavbarComponent],
+  imports: [RouterModule, DatePipe, DuracionPipe, CommonModule, RegistroComponent,  NavbarComponent,ReactiveFormsModule, MatFormFieldModule],
   templateUrl: './registro-jornada.component.html',
   styleUrl: './registro-jornada.component.css'
 })
@@ -45,11 +49,18 @@ export class RegistroJornadaComponent {
   modo!: string
   laborable!: string
 
-  constructor(
+  @ViewChild(RegistroComponent) registroActualComponent!: RegistroComponent;
 
-  ) {
-    setInterval(() => {
-      this.date = new Date()
+
+
+  dia!: FormControl
+  minDia!: string
+  maxDia!: string
+  isAnterior: boolean = false;
+  constructor(  ) {
+    this.date = new Date()
+
+    setTimeout(() => {
       this.jornada = "0"
       if (this.registros) {
         this.jornada = this.sum.transform(this.registros,"duracion")
@@ -63,7 +74,7 @@ export class RegistroJornadaComponent {
           this.jornada = String(Number(this.jornada)+ duracion)
 
       }
-    })
+    },100)
 
     //en registro de jornada solo se puede pulsar entrada o salida. No se puede editar
     //los registros son del día
@@ -87,6 +98,23 @@ export class RegistroJornadaComponent {
   }
 
   ngOnInit(): void {
+
+    this.isAnterior = false;
+    //establece fechas min y max pasa seleccionar fecha de registros atrasados (inicio y fin)
+    let YYYY = this.date.getFullYear()
+    let MM: number = this.date.getMonth()+1
+    let DD: number = this.date.getDate()
+    this.maxDia = YYYY+"-"+String(MM).padStart(2,'0') +"-"+String(DD - 1).padStart(2,'0');
+    DD = 1;
+    MM -= 1;
+    if (MM < 1){
+      MM = 12
+      YYYY -= 1
+    }
+    this.minDia = YYYY+"-"+String(MM).padStart(2,'0') +"-"+String(DD).padStart(2,'0');
+    this.dia = new FormControl(this.datepipe.transform(this.date,"yyyy-MM-dd"));
+
+
 
     this.usuario = this.auth.leerUsuario()
 
@@ -114,14 +142,11 @@ export class RegistroJornadaComponent {
     Swal.showLoading()
 
 
-    this.cosmos.recuperaRegistrosDia().subscribe(resp => {
+    this.cosmos.recuperaRegistrosDia("").subscribe(resp => {
 
       this.registros = resp.registros
       this.registroActual = resp.registro_actual
       this.laborable = resp.laborable
-      console.log("registroActual:"+this.registroActual)
-
-      console.log("registros:"+this.registros)
 
       Swal.close()
 
@@ -143,6 +168,11 @@ export class RegistroJornadaComponent {
 
 
   actualizarRegistro(i: number) {
+
+    if (this.isAnterior && this.registros[i].modoIniFinAutoMan != "VA") {
+       return;
+    }
+
     Swal.fire({
       text:'Actualizando datos',
       icon: 'info',
@@ -150,14 +180,10 @@ export class RegistroJornadaComponent {
     })
 
     Swal.showLoading();
-    console.log("index:"+i)
-    if (i> 0 ) {
-      console.log("modoActu: "+this.registros[i].modoIniFinAutoMan)
-    }
 
     var tmpRegistros: Registro[] = new Array<Registro>();
 
-    if (i == 0) {
+    if (i == -1) {
       this.registroActual.matricula = this.usuario.matricula;
       this.registroActual.codigo = this.usuario.codigo;
       this.registroActual.tipo = "J"
@@ -201,12 +227,10 @@ export class RegistroJornadaComponent {
       tmpRegistros.push(this.registros[i]);
     }
 
-
     this.cosmos.actualizaRegistros(this.usuario,tmpRegistros).subscribe(resp => {
 
       Swal.close()
 
-console.log("Registro actualizado "+resp.errnum )
       if (resp.errnum == 0){
         //recupero ID
         if (resp.ids.length > 0 ){
@@ -223,6 +247,150 @@ console.log("Registro actualizado "+resp.errnum )
           showConfirmButton: false
         })
 
+      }
+
+    }, (err) => {
+
+      Swal.fire({
+        text:err,
+        icon: 'info',
+      })
+    })
+  }
+
+  public modelChanged(ev:Event, formName:any) {
+
+    if (formName === 'dia') {
+      this.date =new Date(this.dia.value+" 00:00:00")
+      let tmp: string = this.datepipe.transform(this.date,"dd/MM/yyyy") as string;
+
+      this.isAnterior = true;
+      //recuperar registros de la fecha
+      Swal.fire({
+        text:'Recuperando registros',
+        icon: 'info',
+        showConfirmButton: false
+      })
+      Swal.showLoading()
+
+      this.cosmos.recuperaRegistrosDia(tmp).subscribe(resp => {
+
+        this.datosActual = {
+          bloqueado: false,
+          modo: this.enModo.EDICION,
+          administrador: false
+        };
+
+        this.registros = resp.registros
+        this.registroActual = resp.registro_actual
+
+        setTimeout(() => {
+          this.jornada = "0"
+          if (this.registros) {
+            this.jornada = this.sum.transform(this.registros,"duracion")
+          }
+          if (this.registroActual && this.registroActual.inicio){
+
+              //calcula el tiempo transcurrido desde el inicio (jornada no finalizada)
+              let date1 =new Date(this.cosmos2date.transform(this.registroActual.inicio))
+              let time = this.date.getTime() -date1.getTime()
+              let duracion: number = parseInt(String(time/60000),10)
+              this.jornada = String(Number(this.jornada)+ duracion)
+
+          }
+
+          this.registroActualComponent.reinicia()
+        },100)
+
+        this.laborable = resp.laborable
+        Swal.close()
+
+      },
+      (err) => {
+        Swal.close()
+
+        Swal.fire({
+        text:err,
+        icon: 'info',
+        })
+
+      this.router.navigateByUrl("/home")
+    });
+    }
+  }
+
+  public grabarRegistros() {
+    console.log(this.registroActual);
+
+    var tmpRegistros: Registro[] = new Array<Registro>()
+
+
+    if (  this.registroActual.modoIniFinAutoMan == "IM" ) {
+      this.registroActual.manual_inicio = "S";
+      this.registroActual.usuario_inicio = this.usuario.matricula;
+      this.registroActual.validado = "P";
+      this.registroActual.usuario_validado = "";
+
+      if (this.usuario.admin) {
+        this.registroActual.usuario_inicio = this.usuario.admin_user;
+        this.registroActual.validado = "S";
+        this.registroActual.usuario_validado = this.usuario.admin_user;
+      }
+      this.registroActual.timestamp_inicio = ""+this.datepipe.transform(new Date,"dd/MM/yyyy HH:mm:ss");
+
+    }
+    else if (this.registroActual.modoIniFinAutoMan == "FM") {
+      this.registroActual.manual_final = "S";
+      this.registroActual.usuario_final = this.usuario.matricula;
+      this.registroActual.validado = "P";
+      this.registroActual.usuario_validado = "";
+
+      if (this.usuario.admin) {
+        this.registroActual.usuario_final = this.usuario.admin_user;
+        this.registroActual.validado = "S";
+        this.registroActual.usuario_validado = this.usuario.admin_user;
+      }
+      this.registroActual.timestamp_final = ""+this.datepipe.transform(new Date,"dd/MM/yyyy HH:mm:ss");
+
+    }
+
+    if (this.registroActual.actualizar == true){
+      if (this.registroActual?.inicio  && this.registroActual?.final) {
+        let date1 =new Date(this.cosmos2date.transform(this.registroActual?.inicio))
+        let date2 = new Date(this.cosmos2date.transform(this.registroActual?.final))
+        let time = date2.getTime() -date1.getTime()
+        this.registroActual.duracion = String(parseInt(String(time/60000),10))
+      }
+      tmpRegistros.push(this.registroActual);
+    }
+
+    if (tmpRegistros.length == 0 ){
+      return;
+    }
+
+    Swal.fire({
+      text:'Actualizando datos',
+      icon: 'info',
+      showConfirmButton: false
+    })
+
+    Swal.showLoading()
+    //aqui ya se que usuario actualiza y si es administrador o no
+    this.cosmos.actualizaRegistros(this.usuario, tmpRegistros).subscribe(resp => {
+
+      Swal.close();
+
+      if (resp.errnum == 0){
+        this.usuario.force =0;
+        this.router.navigateByUrl("/home");
+      }
+      else {
+
+        Swal.fire({
+          text:'Error actualizando datos. '+resp,
+          icon: 'warning',
+          showConfirmButton: false
+        })
       }
 
     }, (err) => {
