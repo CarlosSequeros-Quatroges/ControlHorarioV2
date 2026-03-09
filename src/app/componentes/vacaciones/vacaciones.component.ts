@@ -133,10 +133,6 @@ export class VacacionesComponent implements OnInit {
   }
 
   verCarta(datos: RegistroVacaciones) {
-    const fechainicio: string = datos.fecha;
-    const fechafin: string = datos.fecha;
-    const dias: number = datos.dias;
-
     this.router.navigate(['/carta-vacaciones'], {
       state: { data: datos },
     });
@@ -163,6 +159,12 @@ export class VacacionesComponent implements OnInit {
     const target = event.target as HTMLInputElement;
     if (target.files && target.files.length > 0) {
       const file = target.files[0];
+      if (file.type === 'application/pdf') {
+        datos.uploadFile = file.name;
+      } else {
+        alert('Solo archivos PDF');
+        datos.uploadFile = '';
+      }
 
       var reader = new FileReader();
       reader.readAsDataURL(file);
@@ -170,7 +172,8 @@ export class VacacionesComponent implements OnInit {
         const resuttado: string = reader.result?.toString() || '';
         const b64 = resuttado.split(',')[1];
         console.log(b64);
-        this.subeCarta(datos, b64);
+        datos.b64UploadFile = b64;
+        this.subeCarta(datos);
       };
 
       reader.onerror = function (error) {
@@ -179,7 +182,7 @@ export class VacacionesComponent implements OnInit {
     }
   }
 
-  subeCarta(datos: RegistroVacaciones, b64: string) {
+  subeCarta(datos: RegistroVacaciones) {
     Swal.fire({
       text: 'Subiendo archivo',
       icon: 'info',
@@ -188,11 +191,16 @@ export class VacacionesComponent implements OnInit {
     Swal.showLoading();
 
     this.cosmos
-      .subeCarta(this.usuario.codigo, this.usuario.matricula, datos.fecha, b64)
+      .subeCarta(
+        this.usuario.codigo,
+        this.usuario.matricula,
+        datos.fecha,
+        datos.b64UploadFile,
+      )
       .subscribe(
         (resp: String) => {
           console.log('Archivo enviado ', resp);
-          datos.b64File = b64;
+          datos.b64File = datos.b64UploadFile;
           datos.carta = 'S';
           Swal.close();
         },
@@ -205,5 +213,40 @@ export class VacacionesComponent implements OnInit {
           });
         },
       );
+  }
+
+  onDragOver(event: any) {
+    event.preventDefault();
+  }
+
+  // From drag and drop
+  onDropSuccess(event: any, datos: RegistroVacaciones) {
+    event.preventDefault();
+
+    const files = event.dataTransfer?.files;
+    if (files && files.length > 0) {
+      const file = files[0];
+      if (file.type === 'application/pdf') {
+        datos.uploadFile = file.name;
+
+        var reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => {
+          const resuttado: string = reader.result?.toString() || '';
+          const b64 = resuttado.split(',')[1];
+          datos.b64UploadFile = b64;
+        };
+        reader.onerror = function (error) {
+          console.log('Error: ', error);
+          alert('Error leyendo archivo!!');
+          datos.uploadFile = '';
+          datos.b64UploadFile = '';
+        };
+      } else {
+        alert('Solo archivos PDF');
+        datos.uploadFile = '';
+        datos.b64UploadFile = '';
+      }
+    }
   }
 }

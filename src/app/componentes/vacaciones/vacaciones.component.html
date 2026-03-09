@@ -52,7 +52,7 @@
       </td>
 
       <td class="no-print">
-        <div class="td-icon">
+        <div class="td-icon td-files">
           @if (vac.carta === "N" && usuario.admin) {
             <button (click)="verCarta(vac)" class="boton-icono">
               <i class="fas fa-print"></i>
@@ -70,14 +70,25 @@
             </button>
           }
           @if (vac.carta === "N" && usuario.admin) {
-            <button
-              class="boton-icono"
-              type="button"
-              mat-raised-button
-              (click)="fileInput.click()"
-            >
-              <i class="fas fa-file-arrow-up"></i>
-            </button>
+            @if (!vac.uploadFile || vac.uploadFile === "") {
+              <button
+                class="boton-icono"
+                type="button"
+                mat-raised-button
+                (click)="fileInput.click()"
+              >
+                <i class="fas fa-folder-open"></i>
+              </button>
+            } @else {
+              <button
+                class="boton-icono icon-verde"
+                type="button"
+                mat-raised-button
+                (click)="subeCarta(vac)"
+              >
+                <i class="fas fa-file-arrow-up"></i>
+              </button>
+            }
             <input
               hidden
               accept="application/pdf"
@@ -86,6 +97,20 @@
               type="file"
               id="file"
             />
+
+            <div
+              class="drop-file-area"
+              (dragover)="onDragOver($event)"
+              (drop)="onDropSuccess($event, vac)"
+            >
+              <label class="custom-file-upload">
+                {{
+                  !vac.uploadFile || vac.uploadFile === ""
+                    ? "Arrastrar pdf..."
+                    : vac.uploadFile
+                }}</label
+              >
+            </div>
           }
         </div>
       </td>

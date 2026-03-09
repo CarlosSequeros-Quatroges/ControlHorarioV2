@@ -37,10 +37,28 @@ table th {
   display: flex;
   align-items: center;
   height: 47px;
+}
+.td-icon .mat-icon {
+  margin-right: 0.5rem;
+}
 
-  .mat-icon {
-    margin-right: 0.5rem;
-  }
+.td-files {
+  display: flex;
+  align-items: center;
+  height: 47px;
+}
+.td-files .boton-icono {
+  margin-right: 1rem;
+  width: 5rem;
+}
+
+.td-files .boton-icono + .icon-verde {
+  background-color: green;
+}
+.td-files .drop-file-area {
+  margin-right: 1rem;
+  flex-grow: 10;
+  flex-shrink: 1;
 }
 
 td.totales {
@@ -74,6 +92,40 @@ td.totales {
 
 .no-click {
   pointer-events: none;
+}
+
+.drop-file-area {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 60px; /* Ajusta según el alto de tu fila */
+  border: 2px dashed #cbd5e0;
+  border-radius: 6px;
+  background-color: #f8fafc;
+  transition: all 0.2s ease-in-out;
+  cursor: pointer;
+  margin: 4px; /* Pequeño margen para que no toque los bordes del td */
+}
+
+/* Efecto Hover simple del ratón */
+.drop-file-area:hover {
+  background-color: #edf2f7;
+  border-color: #a0aec0;
+}
+
+/* Efecto cuando el archivo está "volando" sobre el área */
+.drop-file-area.is-dragging {
+  background-color: #ebf8ff;
+  border-color: #4299e1;
+  color: #2b6cb0;
+  transform: scale(1.02); /* Pequeño efecto de pulsado */
+}
+
+/* Estilo para el éxito (puedes aplicarlo tras el drop) */
+.drop-file-area.drop-success {
+  background-color: #f0fff4;
+  border-color: #48bb78;
+  border-style: solid;
 }
 
 @media print {

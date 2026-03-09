@@ -15,78 +15,83 @@ import { RegistroComponent } from '../registro/registro.component';
 import { DatosCtrlRegistro } from '../../interfaces/datos-ctrl-registro';
 import { RegistroModo } from '../../interfaces/registro-modo';
 import { DuracionPipe } from '../../pipes/duracion.pipe';
-import { FooterComponent } from "../footer/footer.component";
-import { NavbarComponent } from "../navbar/navbar.component";
+import { FooterComponent } from '../footer/footer.component';
+import { NavbarComponent } from '../navbar/navbar.component';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import localeEs from '@angular/common/locales/es';
 
-
 @Component({
   selector: 'app-registro-jornada',
-  imports: [RouterModule, DatePipe, DuracionPipe, CommonModule, RegistroComponent,  NavbarComponent,ReactiveFormsModule, MatFormFieldModule],
+  imports: [
+    RouterModule,
+    DatePipe,
+    DuracionPipe,
+    CommonModule,
+    RegistroComponent,
+    NavbarComponent,
+    ReactiveFormsModule,
+    MatFormFieldModule,
+  ],
   templateUrl: './registro-jornada.component.html',
-  styleUrl: './registro-jornada.component.css'
+  styleUrl: './registro-jornada.component.css',
 })
 export class RegistroJornadaComponent {
+  route: ActivatedRoute = inject(ActivatedRoute);
+  usuario: UsuarioModel = inject(UsuarioModel);
+  auth: AuthService = inject(AuthService);
+  cosmos: CosmosService = inject(CosmosService);
+  router: Router = inject(Router);
 
-  route: ActivatedRoute = inject(ActivatedRoute)
-  usuario: UsuarioModel = inject(UsuarioModel)
-  auth: AuthService = inject(AuthService)
-  cosmos: CosmosService = inject(CosmosService)
-  router: Router = inject(Router)
-
-  datepipe: DatePipe = inject(DatePipe)
-  cosmos2date: Cosmos2datetimePipe = inject(Cosmos2datetimePipe)
-  sum: SumPipe= inject(SumPipe)
+  datepipe: DatePipe = inject(DatePipe);
+  cosmos2date: Cosmos2datetimePipe = inject(Cosmos2datetimePipe);
+  sum: SumPipe = inject(SumPipe);
 
   enModo: typeof RegistroModo = RegistroModo;
-  datosActual!: DatosCtrlRegistro
-  datos!: DatosCtrlRegistro
-  registroActual!: Registro
-  registros!: Registro[]
+  datosActual!: DatosCtrlRegistro;
+  datos!: DatosCtrlRegistro;
+  registroActual!: Registro;
+  registros!: Registro[];
   date!: Date;
-  jornada!: string
-  modo!: string
-  laborable!: string
+  jornada!: string;
+  modo!: string;
+  laborable!: string;
 
   @ViewChild(RegistroComponent) registroActualComponent!: RegistroComponent;
 
-
-
-  dia!: FormControl
-  minDia!: string
-  maxDia!: string
+  dia!: FormControl;
+  minDia!: string;
+  maxDia!: string;
   isAnterior: boolean = false;
-  constructor(  ) {
-    this.date = new Date()
+  constructor() {
+    this.date = new Date();
 
     setTimeout(() => {
-      this.jornada = "0"
+      this.jornada = '0';
       if (this.registros) {
-        this.jornada = this.sum.transform(this.registros,"duracion")
+        this.jornada = this.sum.transform(this.registros, 'duracion');
       }
-      if (this.registroActual && this.registroActual.inicio){
-
-          //calcula el tiempo transcurrido desde el inicio (jornada no finalizada)
-          let date1 =new Date(this.cosmos2date.transform(this.registroActual.inicio))
-          let time = this.date.getTime() -date1.getTime()
-          let duracion: number = parseInt(String(time/60000),10)
-          this.jornada = String(Number(this.jornada)+ duracion)
-
+      if (this.registroActual && this.registroActual.inicio) {
+        //calcula el tiempo transcurrido desde el inicio (jornada no finalizada)
+        let date1 = new Date(
+          this.cosmos2date.transform(this.registroActual.inicio),
+        );
+        let time = this.date.getTime() - date1.getTime();
+        let duracion: number = parseInt(String(time / 60000), 10);
+        this.jornada = String(Number(this.jornada) + duracion);
       }
-    },100)
+    }, 100);
 
     //en registro de jornada solo se puede pulsar entrada o salida. No se puede editar
     //los registros son del día
     this.datosActual = {
       bloqueado: false,
       modo: this.enModo.REGISTRO,
-      administrador: false
+      administrador: false,
     };
     this.datos = {
-      bloqueado:true,
+      bloqueado: true,
       modo: this.enModo.REGISTRO,
-      administrador: false
+      administrador: false,
     };
 
     if (this.usuario.admin) {
@@ -94,90 +99,93 @@ export class RegistroJornadaComponent {
       this.datosActual.administrador = true;
       this.datos.administrador = true;
     }
-    this.registros = Array<Registro>()
+    this.registros = Array<Registro>();
   }
 
   ngOnInit(): void {
-
     this.isAnterior = false;
     //establece fechas min y max pasa seleccionar fecha de registros atrasados (inicio y fin)
-    let YYYY = this.date.getFullYear()
-    let MM: number = this.date.getMonth()+1
-    let DD: number = this.date.getDate()
-    this.maxDia = YYYY+"-"+String(MM).padStart(2,'0') +"-"+String(DD - 1).padStart(2,'0');
+    let YYYY = this.date.getFullYear();
+    let MM: number = this.date.getMonth() + 1;
+    let DD: number = this.date.getDate();
+    this.maxDia =
+      YYYY +
+      '-' +
+      String(MM).padStart(2, '0') +
+      '-' +
+      String(DD - 1).padStart(2, '0');
     DD = 1;
     MM -= 1;
-    if (MM < 1){
-      MM = 12
-      YYYY -= 1
+    if (MM < 1) {
+      MM = 12;
+      YYYY -= 1;
     }
-    this.minDia = YYYY+"-"+String(MM).padStart(2,'0') +"-"+String(DD).padStart(2,'0');
-    this.dia = new FormControl(this.datepipe.transform(this.date,"yyyy-MM-dd"));
+    this.minDia =
+      YYYY +
+      '-' +
+      String(MM).padStart(2, '0') +
+      '-' +
+      String(DD).padStart(2, '0');
+    this.dia = new FormControl(
+      this.datepipe.transform(this.date, 'yyyy-MM-dd'),
+    );
 
-
-
-    this.usuario = this.auth.leerUsuario()
+    this.usuario = this.auth.leerUsuario();
 
     if (!this.usuario || this.usuario.nombre === '') {
-      this.auth.logout()
-      this.router.navigateByUrl("/login")
-      return
-    }
-
-    if (this.usuario.force == 1) {
-      this.router.navigateByUrl('/new-passwd')
+      this.auth.logout();
+      this.router.navigateByUrl('/login');
       return;
     }
 
-    this.modo = "R"  //modo registro
-    if (this.usuario.admin){
-      this.modo = "E" //modo edicion
+    if (this.usuario.force == 1) {
+      this.router.navigateByUrl('/new-passwd');
+      return;
+    }
+
+    this.modo = 'R'; //modo registro
+    if (this.usuario.admin) {
+      this.modo = 'E'; //modo edicion
     }
 
     Swal.fire({
-      text:'Recuperando datos',
+      text: 'Recuperando datos',
       icon: 'info',
-      showConfirmButton: false
-    })
-    Swal.showLoading()
-
-
-    this.cosmos.recuperaRegistrosDia("").subscribe(resp => {
-
-      this.registros = resp.registros
-      this.registroActual = resp.registro_actual
-      this.laborable = resp.laborable
-
-      Swal.close()
-
-    },
-    (err) => {
-      Swal.close()
-
-      Swal.fire({
-        text:err,
-        icon: 'info',
-      })
-
-      this.router.navigateByUrl("/home")
+      showConfirmButton: false,
     });
+    Swal.showLoading();
 
+    this.cosmos.recuperaRegistrosDia('').subscribe(
+      (resp) => {
+        this.registros = resp.registros;
+        this.registroActual = resp.registro_actual;
+        this.laborable = resp.laborable;
 
+        Swal.close();
+      },
+      (err) => {
+        Swal.close();
+
+        Swal.fire({
+          text: err,
+          icon: 'info',
+        });
+
+        this.router.navigateByUrl('/home');
+      },
+    );
   }
 
-
-
   actualizarRegistro(i: number) {
-
-    if (this.isAnterior && this.registros[i].modoIniFinAutoMan != "VA") {
-       return;
+    if (this.isAnterior && this.registros[i].modoIniFinAutoMan != 'VA') {
+      return;
     }
 
     Swal.fire({
-      text:'Actualizando datos',
+      text: 'Actualizando datos',
       icon: 'info',
-      showConfirmButton: false
-    })
+      showConfirmButton: false,
+    });
 
     Swal.showLoading();
 
@@ -186,220 +194,221 @@ export class RegistroJornadaComponent {
     if (i == -1) {
       this.registroActual.matricula = this.usuario.matricula;
       this.registroActual.codigo = this.usuario.codigo;
-      this.registroActual.tipo = "J"
+      this.registroActual.tipo = 'J';
 
-      if (this.registroActual.modoIniFinAutoMan == "IA" ) {
-        this.registroActual.manual_inicio = "N";
+      if (this.registroActual.modoIniFinAutoMan == 'IA') {
+        this.registroActual.manual_inicio = 'N';
         this.registroActual.usuario_inicio = this.usuario.matricula;
         this.registroActual.timestamp_inicio = this.registroActual.inicio;
 
-        this.registroActual.validado = "N";
-        this.registroActual.usuario_validado ="";
-        if ( parseInt("0"+this.registroActual.duracion) > 0 ) {
-          this.registroActual.validado = "S";
+        this.registroActual.validado = 'N';
+        this.registroActual.usuario_validado = '';
+        if (parseInt('0' + this.registroActual.duracion) > 0) {
+          this.registroActual.validado = 'S';
           this.registroActual.usuario_validado = this.usuario.matricula;
         }
-      }
-      else if (this.registroActual.modoIniFinAutoMan == "FA") {
-        this.registroActual.manual_final = "N";
+      } else if (this.registroActual.modoIniFinAutoMan == 'FA') {
+        this.registroActual.manual_final = 'N';
         this.registroActual.usuario_final = this.usuario.matricula;
         this.registroActual.timestamp_final = this.registroActual.final;
 
-        this.registroActual.validado = "N";
-        this.registroActual.usuario_validado ="";
-        if ( parseInt("0"+this.registroActual.duracion) > 0 ) {
-          this.registroActual.validado = "S";
+        this.registroActual.validado = 'N';
+        this.registroActual.usuario_validado = '';
+        if (parseInt('0' + this.registroActual.duracion) > 0) {
+          this.registroActual.validado = 'S';
           this.registroActual.usuario_validado = this.usuario.matricula;
         }
-        if (! this.registroActual.inicio ) { //registra final sin inicio. esto pasa a incidencias
-          this.registroActual.validado = "P";
+        if (!this.registroActual.inicio) {
+          //registra final sin inicio. esto pasa a incidencias
+          this.registroActual.validado = 'P';
         }
       }
 
       tmpRegistros.push(this.registroActual);
-
-    }
-    else {
-      if (this.registros[i].modoIniFinAutoMan == "VA") {  //validar registro manual de usuario
-      this.registros[i].validado = "S";
-      this.registros[i].usuario_validado = this.usuario.admin_user;
+    } else {
+      if (this.registros[i].modoIniFinAutoMan == 'VA') {
+        //validar registro manual de usuario
+        this.registros[i].validado = 'S';
+        this.registros[i].usuario_validado = this.usuario.admin_user;
       }
       tmpRegistros.push(this.registros[i]);
     }
 
-    this.cosmos.actualizaRegistros(this.usuario,tmpRegistros).subscribe(resp => {
+    console.log('Vamoa a actualizar', tmpRegistros);
 
-      Swal.close()
+    this.cosmos.actualizaRegistros(this.usuario, tmpRegistros).subscribe(
+      (resp) => {
+        Swal.close();
 
-      if (resp.errnum == 0){
-        //recupero ID
-        if (resp.ids.length > 0 ){
-          this.registroActual.id = "" +resp.ids[0];
+        if (resp.errnum == 0) {
+          //recupero ID
+          if (resp.ids.length > 0) {
+            this.registroActual.id = '' + resp.ids[0];
+          }
+          this.usuario.force = 0;
+          this.router.navigateByUrl('/home');
+        } else {
+          Swal.fire({
+            text: 'Error actualizando datos. ' + resp,
+            icon: 'warning',
+            showConfirmButton: false,
+          });
         }
-        this.usuario.force =0;
-        this.router.navigateByUrl("/home");
-      }
-      else {
-
+      },
+      (err) => {
         Swal.fire({
-          text:'Error actualizando datos. '+resp,
-          icon: 'warning',
-          showConfirmButton: false
-        })
-
-      }
-
-    }, (err) => {
-
-      Swal.fire({
-        text:err,
-        icon: 'info',
-      })
-    })
+          text: err,
+          icon: 'info',
+        });
+      },
+    );
   }
 
-  public modelChanged(ev:Event, formName:any) {
-
+  public modelChanged(ev: Event, formName: any) {
     if (formName === 'dia') {
-      this.date =new Date(this.dia.value+" 00:00:00")
-      let tmp: string = this.datepipe.transform(this.date,"dd/MM/yyyy") as string;
+      this.date = new Date(this.dia.value + ' 00:00:00');
+      let tmp: string = this.datepipe.transform(
+        this.date,
+        'dd/MM/yyyy',
+      ) as string;
 
       this.isAnterior = true;
       //recuperar registros de la fecha
       Swal.fire({
-        text:'Recuperando registros',
+        text: 'Recuperando registros',
         icon: 'info',
-        showConfirmButton: false
-      })
-      Swal.showLoading()
+        showConfirmButton: false,
+      });
+      Swal.showLoading();
 
-      this.cosmos.recuperaRegistrosDia(tmp).subscribe(resp => {
+      this.cosmos.recuperaRegistrosDia(tmp).subscribe(
+        (resp) => {
+          this.datosActual = {
+            bloqueado: false,
+            modo: this.enModo.EDICION,
+            administrador: false,
+          };
 
-        this.datosActual = {
-          bloqueado: false,
-          modo: this.enModo.EDICION,
-          administrador: false
-        };
+          this.registros = resp.registros;
+          this.registroActual = resp.registro_actual;
 
-        this.registros = resp.registros
-        this.registroActual = resp.registro_actual
-
-        setTimeout(() => {
-          this.jornada = "0"
-          if (this.registros) {
-            this.jornada = this.sum.transform(this.registros,"duracion")
-          }
-          if (this.registroActual && this.registroActual.inicio){
-
+          setTimeout(() => {
+            this.jornada = '0';
+            if (this.registros) {
+              this.jornada = this.sum.transform(this.registros, 'duracion');
+            }
+            if (this.registroActual && this.registroActual.inicio) {
               //calcula el tiempo transcurrido desde el inicio (jornada no finalizada)
-              let date1 =new Date(this.cosmos2date.transform(this.registroActual.inicio))
-              let time = this.date.getTime() -date1.getTime()
-              let duracion: number = parseInt(String(time/60000),10)
-              this.jornada = String(Number(this.jornada)+ duracion)
+              let date1 = new Date(
+                this.cosmos2date.transform(this.registroActual.inicio),
+              );
+              let time = this.date.getTime() - date1.getTime();
+              let duracion: number = parseInt(String(time / 60000), 10);
+              this.jornada = String(Number(this.jornada) + duracion);
+            }
 
-          }
+            this.registroActualComponent.reinicia();
+          }, 100);
 
-          this.registroActualComponent.reinicia()
-        },100)
+          this.laborable = resp.laborable;
+          Swal.close();
+        },
+        (err) => {
+          Swal.close();
 
-        this.laborable = resp.laborable
-        Swal.close()
+          Swal.fire({
+            text: err,
+            icon: 'info',
+          });
 
-      },
-      (err) => {
-        Swal.close()
-
-        Swal.fire({
-        text:err,
-        icon: 'info',
-        })
-
-      this.router.navigateByUrl("/home")
-    });
+          this.router.navigateByUrl('/home');
+        },
+      );
     }
   }
 
   public grabarRegistros() {
     console.log(this.registroActual);
 
-    var tmpRegistros: Registro[] = new Array<Registro>()
+    var tmpRegistros: Registro[] = new Array<Registro>();
 
-
-    if (  this.registroActual.modoIniFinAutoMan == "IM" ) {
-      this.registroActual.manual_inicio = "S";
+    if (this.registroActual.modoIniFinAutoMan == 'IM') {
+      this.registroActual.manual_inicio = 'S';
       this.registroActual.usuario_inicio = this.usuario.matricula;
-      this.registroActual.validado = "P";
-      this.registroActual.usuario_validado = "";
+      this.registroActual.validado = 'P';
+      this.registroActual.usuario_validado = '';
 
       if (this.usuario.admin) {
         this.registroActual.usuario_inicio = this.usuario.admin_user;
-        this.registroActual.validado = "S";
+        this.registroActual.validado = 'S';
         this.registroActual.usuario_validado = this.usuario.admin_user;
       }
-      this.registroActual.timestamp_inicio = ""+this.datepipe.transform(new Date,"dd/MM/yyyy HH:mm:ss");
-
-    }
-    else if (this.registroActual.modoIniFinAutoMan == "FM") {
-      this.registroActual.manual_final = "S";
+      this.registroActual.timestamp_inicio =
+        '' + this.datepipe.transform(new Date(), 'dd/MM/yyyy HH:mm:ss');
+    } else if (this.registroActual.modoIniFinAutoMan == 'FM') {
+      this.registroActual.manual_final = 'S';
       this.registroActual.usuario_final = this.usuario.matricula;
-      this.registroActual.validado = "P";
-      this.registroActual.usuario_validado = "";
+      this.registroActual.validado = 'P';
+      this.registroActual.usuario_validado = '';
 
       if (this.usuario.admin) {
         this.registroActual.usuario_final = this.usuario.admin_user;
-        this.registroActual.validado = "S";
+        this.registroActual.validado = 'S';
         this.registroActual.usuario_validado = this.usuario.admin_user;
       }
-      this.registroActual.timestamp_final = ""+this.datepipe.transform(new Date,"dd/MM/yyyy HH:mm:ss");
-
+      this.registroActual.timestamp_final =
+        '' + this.datepipe.transform(new Date(), 'dd/MM/yyyy HH:mm:ss');
     }
 
-    if (this.registroActual.actualizar == true){
-      if (this.registroActual?.inicio  && this.registroActual?.final) {
-        let date1 =new Date(this.cosmos2date.transform(this.registroActual?.inicio))
-        let date2 = new Date(this.cosmos2date.transform(this.registroActual?.final))
-        let time = date2.getTime() -date1.getTime()
-        this.registroActual.duracion = String(parseInt(String(time/60000),10))
+    if (this.registroActual.actualizar == true) {
+      if (this.registroActual?.inicio && this.registroActual?.final) {
+        let date1 = new Date(
+          this.cosmos2date.transform(this.registroActual?.inicio),
+        );
+        let date2 = new Date(
+          this.cosmos2date.transform(this.registroActual?.final),
+        );
+        let time = date2.getTime() - date1.getTime();
+        this.registroActual.duracion = String(
+          parseInt(String(time / 60000), 10),
+        );
       }
       tmpRegistros.push(this.registroActual);
     }
 
-    if (tmpRegistros.length == 0 ){
+    if (tmpRegistros.length == 0) {
       return;
     }
 
     Swal.fire({
-      text:'Actualizando datos',
+      text: 'Actualizando datos',
       icon: 'info',
-      showConfirmButton: false
-    })
+      showConfirmButton: false,
+    });
 
-    Swal.showLoading()
+    Swal.showLoading();
     //aqui ya se que usuario actualiza y si es administrador o no
-    this.cosmos.actualizaRegistros(this.usuario, tmpRegistros).subscribe(resp => {
+    this.cosmos.actualizaRegistros(this.usuario, tmpRegistros).subscribe(
+      (resp) => {
+        Swal.close();
 
-      Swal.close();
-
-      if (resp.errnum == 0){
-        this.usuario.force =0;
-        this.router.navigateByUrl("/home");
-      }
-      else {
-
+        if (resp.errnum == 0) {
+          this.usuario.force = 0;
+          this.router.navigateByUrl('/home');
+        } else {
+          Swal.fire({
+            text: 'Error actualizando datos. ' + resp,
+            icon: 'warning',
+            showConfirmButton: false,
+          });
+        }
+      },
+      (err) => {
         Swal.fire({
-          text:'Error actualizando datos. '+resp,
-          icon: 'warning',
-          showConfirmButton: false
-        })
-      }
-
-    }, (err) => {
-
-      Swal.fire({
-        text:err,
-        icon: 'info',
-      })
-    })
+          text: err,
+          icon: 'info',
+        });
+      },
+    );
   }
-
 }
