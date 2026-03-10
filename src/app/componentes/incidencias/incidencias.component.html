@@ -1,15 +1,17 @@
 <app-navbar></app-navbar>
 <div>
-  <h3 class="text-left">REGISTROS CON INDICENCIAS
+  <h3 class="text-left">
+    REGISTROS CON INDICENCIAS
     <span>
       <input
         type="month"
         id="mes"
         name="mes"
-        min="{{min}}"
-        max="{{max}}"
+        min="{{ min }}"
+        max="{{ max }}"
         [formControl]="mes"
-        (ngModelChange)="modelChanged($event, 'mes')" />
+        (ngModelChange)="modelChanged($event, 'mes')"
+      />
     </span>
   </h3>
 
@@ -17,16 +19,23 @@
   <app-registro
     *ngFor="let registro of incidencias"
     [datos]="datos"
-    [registro]="registro">
+    [registro]="registro"
+  >
   </app-registro>
-  <hr>
+  <hr />
   <!--<div class="float-end mt-3">-->
-  <div class="float-end mt-3">
-    <h5><span class='d-sm-none d-md-inline badge bg-success'
-        style="color:#ffff" (click)="actualizaRegistros()"><i
-          class="fas fa-save"></i> Actualizar registros</span></h5>
-  </div>
-
+  @if (!usuario.admin) {
+    <div class="float-end mt-3">
+      <h5>
+        <span
+          class="d-sm-none d-md-inline badge bg-success"
+          style="color: #ffff"
+          (click)="actualizaRegistros()"
+          ><i class="fas fa-save"></i> Actualizar registros</span
+        >
+      </h5>
+    </div>
+  }
 </div>
 
 <!--  pruebas añadir registro fecha atrasada

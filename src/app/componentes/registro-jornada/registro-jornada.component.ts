@@ -330,14 +330,26 @@ export class RegistroJornadaComponent {
   public grabarRegistros() {
     console.log(this.registroActual);
 
+    if (
+      this.registroActual.modifica_inicio != 'S' ||
+      this.registroActual.modifica_final != 'S'
+    ) {
+      alert('Completar hora de inicio y final del registro');
+      return;
+    }
+
     var tmpRegistros: Registro[] = new Array<Registro>();
 
-    if (this.registroActual.modoIniFinAutoMan == 'IM') {
+    if (
+      this.registroActual.modoIniFinAutoMan &&
+      this.registroActual.modoIniFinAutoMan.indexOf('IM') > 0
+    ) {
       this.registroActual.manual_inicio = 'S';
       this.registroActual.usuario_inicio = this.usuario.matricula;
       this.registroActual.validado = 'P';
       this.registroActual.usuario_validado = '';
 
+      // esto tiene que desaparecer
       if (this.usuario.admin) {
         this.registroActual.usuario_inicio = this.usuario.admin_user;
         this.registroActual.validado = 'S';
@@ -345,7 +357,12 @@ export class RegistroJornadaComponent {
       }
       this.registroActual.timestamp_inicio =
         '' + this.datepipe.transform(new Date(), 'dd/MM/yyyy HH:mm:ss');
-    } else if (this.registroActual.modoIniFinAutoMan == 'FM') {
+    }
+
+    if (
+      this.registroActual.modoIniFinAutoMan &&
+      this.registroActual.modoIniFinAutoMan.indexOf('FM')
+    ) {
       this.registroActual.manual_final = 'S';
       this.registroActual.usuario_final = this.usuario.matricula;
       this.registroActual.validado = 'P';

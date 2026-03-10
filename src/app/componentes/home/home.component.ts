@@ -56,6 +56,8 @@ export class HomeComponent {
   enModo: typeof RegistroModo = RegistroModo;
 
   public registros!: Registro[];
+  public hayRegistroActual: boolean = false;
+
   public totales!: Totales[];
   public date!: Date;
   public totalesMes!: Totales;
@@ -134,6 +136,7 @@ export class HomeComponent {
   }
 
   cargaRegistros(mes: string) {
+    this.hayRegistroActual = false;
     Swal.fire({
       text: 'Recuperando registros',
       icon: 'info',
@@ -301,6 +304,10 @@ export class HomeComponent {
                   tmp.diferencia = (
                     Number(tmp.jornada) - Number(tmp.duracion)
                   ).toString();
+
+                  //añado el registro actual a la lista de registros
+                  this.registros.push(resp.registro_actual);
+                  this.hayRegistroActual = true;
                 }
               }
             } else {

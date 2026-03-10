@@ -1,17 +1,19 @@
 <app-navbar></app-navbar>
 <div *ngIf="registros">
   <!--TITULO-->
-  <h3 class="text-left">REGISTROS DE JORNADA <span>
+  <h3 class="text-left">
+    REGISTROS DE JORNADA
+    <span>
       <input
         type="month"
         id="mes"
         name="mes"
-        min="{{min}}"
-        max="{{max}}"
+        min="{{ min }}"
+        max="{{ max }}"
         [formControl]="mes"
-        (ngModelChange)="modelChanged($event, 'mes')" />
+        (ngModelChange)="modelChanged($event, 'mes')"
+      />
     </span>
-
   </h3>
 
   <!--TOTALES DEL MES-->
@@ -23,21 +25,24 @@
       </div>
       <div class="col-1">
         <a>
-          <span class="position-relative">{{ totalesMes.duracion |
-            min2hourMin }}</span>
+          <span class="position-relative">{{
+            totalesMes.duracion | min2hourMin
+          }}</span>
         </a>
       </div>
       <div class="col-1">
         <a>
-          <span class>{{ totalesMes.jornada | min2hourMin}}</span>
+          <span class>{{ totalesMes.jornada | min2hourMin }}</span>
         </a>
       </div>
       <div class="col-1">
         <a>
-          <span *ngIf="totalesMes.positivo" style="color:green">{{
-            totalesMes.diferencia |min2hourMin }}</span>
-          <span *ngIf="!totalesMes.positivo" style="color:red">-{{
-            totalesMes.diferencia |min2hourMin}}</span>
+          <span *ngIf="totalesMes.positivo" style="color: green">{{
+            totalesMes.diferencia | min2hourMin
+          }}</span>
+          <span *ngIf="!totalesMes.positivo" style="color: red"
+            >-{{ totalesMes.diferencia | min2hourMin }}</span
+          >
         </a>
       </div>
     </div>
@@ -46,11 +51,20 @@
       <div class="col-4">
         <span class="position-relative"><b>Incidencias</b></span>
       </div>
-      <div class="col-1">
-        <a>
-          <span class="position-relative">{{ incidencias }}</span>
-        </a>
-      </div>
+      @if (incidencias > 0) {
+        <div class="col-1 hay-incidencias">
+          <a [routerLink]="['/incidencias']">
+            <mat-icon>warning</mat-icon>
+            <span class="position-relative">{{ incidencias }}</span>
+          </a>
+        </div>
+      } @else {
+        <div class="col-1">
+          <a>
+            <span class="position-relative">{{ incidencias }}</span>
+          </a>
+        </div>
+      }
     </div>
   </div>
 
@@ -67,73 +81,127 @@
         <th scope="col">Diferencia</th>
       </tr>
     </thead>
-    <tbody *ngFor="let total of totales; let i=index;">
+    <tbody *ngFor="let total of totales; let i = index">
       <tr>
         <!-- ICONO DEL DIA (FESTIVO, VACACIONES, REGISTROS, SIN REGISTROS (INCIDENCIA))-->
         <td>
           <p>
             <!-- background-color: rgb(164, 251, 161);'
                             -->
-            <a class="position-relative"
-              [ngClass]="[(registros|filtrar:'inicio':total.fecha).length>0
-              ? 'accion':'']"
-              [ngStyle]="{'background-color':
-              (registros|filtrar:'inicio':total.fecha).length>0
-              ?'#b1ffc3':'#ffff60',
-              'color':
-              (registros|filtrar:'inicio':total.fecha).length>0
-              ?'#007601':'#8a0000'}
-              "
+            <a
+              class="position-relative"
+              [ngClass]="[
+                (registros | filtrar: 'inicio' : total.fecha).length > 0
+                  ? 'accion'
+                  : '',
+              ]"
+              [ngStyle]="{
+                'background-color':
+                  (registros | filtrar: 'inicio' : total.fecha).length > 0
+                    ? '#b1ffc3'
+                    : '#ffff60',
+                color:
+                  (registros | filtrar: 'inicio' : total.fecha).length > 0
+                    ? '#007601'
+                    : '#8a0000',
+              }"
               *ngIf="total.tipo == 'J'"
               data-bs-toggle="collapse"
-              [attr.data-bs-target]="'#collapse'+i"
+              [attr.data-bs-target]="'#collapse' + i"
               aria-expanded="false"
-              [attr.aria-controls]="'collapse'+i">
+              [attr.aria-controls]="'collapse' + i"
+            >
               <mat-icon
-                *ngIf="(registros|filtrar:'inicio':total.fecha).length>
-                0">format_list_bulleted</mat-icon>
+                *ngIf="
+                  (registros | filtrar: 'inicio' : total.fecha).length > 0 &&
+                  !hayRegistroActual
+                "
+                >format_list_bulleted</mat-icon
+              >
               <mat-icon
-                *ngIf="(registros|filtrar:'inicio':total.fecha).length
-                == 0">warning</mat-icon>
+                *ngIf="
+                  (registros | filtrar: 'inicio' : total.fecha).length == 1 &&
+                  hayRegistroActual
+                "
+                >timer</mat-icon
+              >
+              <mat-icon
+                *ngIf="
+                  (registros | filtrar: 'inicio' : total.fecha).length == 0
+                "
+                >warning</mat-icon
+              >
+
               Registros
-              <span class="position-absolute top-0 start-100
-                translate-middle badge rounded-pill bg-success"
-                *ngIf="(registros|filtrar:'inicio':total.fecha).length>
-                0">
-                {{(registros|filtrar:'inicio':total.fecha).length}}
 
-                @if(((registros|filtrar:'inicio':total.fecha)|filtrar:'manual_inicio':'S').length ||
-                ((registros|filtrar:'inicio':total.fecha)|filtrar:'manual_final':'S').length){
-                    <i class="fa fa-user" style="color:white" aria-hidden="true"></i>
+              <span
+                class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-success"
+                *ngIf="(registros | filtrar: 'inicio' : total.fecha).length > 0"
+              >
+                {{ (registros | filtrar: "inicio" : total.fecha).length }}
+
+                @if (
+                  (
+                    registros
+                    | filtrar: "inicio" : total.fecha
+                    | filtrar: "manual_inicio" : "S"
+                  ).length ||
+                  (
+                    registros
+                    | filtrar: "inicio" : total.fecha
+                    | filtrar: "manual_final" : "S"
+                  ).length
+                ) {
+                  <i
+                    class="fa fa-user"
+                    style="color: white"
+                    aria-hidden="true"
+                  ></i>
                 }
 
-                @if(((registros|filtrar:'inicio':total.fecha)|filtrar:'validado':'P').length) {
-                    <i class="fa fa-pause-circle" style="color:white" aria-hidden="true"></i>
+                @if (
+                  (
+                    registros
+                    | filtrar: "inicio" : total.fecha
+                    | filtrar: "validado" : "P"
+                  ).length
+                ) {
+                  <i
+                    class="fa fa-pause-circle"
+                    style="color: white"
+                    aria-hidden="true"
+                  ></i>
                 }
-
               </span>
-              <span class="position-absolute top-0 start-100
-                translate-middle badge rounded-pill bg-danger"
-                *ngIf="(registros|filtrar:'inicio':total.fecha).length
-                ==0">
-                {{(registros|filtrar:'inicio':total.fecha).length}}
+              <span
+                class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                *ngIf="
+                  (registros | filtrar: 'inicio' : total.fecha).length == 0
+                "
+              >
+                {{ (registros | filtrar: "inicio" : total.fecha).length }}
               </span>
-
-
             </a>
 
-            <a *ngIf="total.tipo =='F'" style='color: #0400f8;
-              background-color: #5fcff1;'><mat-icon>timer_off</mat-icon>
-              Festivo</a>
-            <a *ngIf="total.tipo =='V'" style='color:
-              #0400f8;background-color: #5fcff1;'>
+            <a
+              *ngIf="total.tipo == 'F'"
+              style="color: #0400f8; background-color: #5fcff1"
+              ><mat-icon>timer_off</mat-icon> Festivo</a
+            >
+            <a
+              *ngIf="total.tipo == 'V'"
+              style="color: #0400f8; background-color: #5fcff1"
+            >
               <mat-icon>beach_access</mat-icon>
-              Vacaciones</a>
+              Vacaciones</a
+            >
           </p>
 
-          <div class="collapse" [id]="'collapse'+i"
-            *ngIf="(registros|filtrar:'inicio':total.fecha).length>
-            0">
+          <div
+            class="collapse"
+            [id]="'collapse' + i"
+            *ngIf="(registros | filtrar: 'inicio' : total.fecha).length > 0"
+          >
             <div class="container">
               <div class="row justify-content-left gap-2 titulos">
                 <div class="col-2">
@@ -148,16 +216,18 @@
                 </div>
                 <div class="col-2">
                   <h6>
-                    <span class> Duracion
-                    </span>
+                    <span class> Duracion </span>
                   </h6>
                 </div>
               </div>
             </div>
             <app-registro
-              *ngFor="let registro of registros|filtrar:'inicio':total.fecha"
+              *ngFor="
+                let registro of registros | filtrar: 'inicio' : total.fecha
+              "
               [datos]="datos"
-              [registro]="registro">
+              [registro]="registro"
+            >
             </app-registro>
           </div>
         </td>
@@ -166,25 +236,31 @@
         <td>{{ total.fecha }}</td>
         <td></td>
         <!-- horas trabajadas -->
-        <td><span *ngIf="total.tipo == 'J'">{{ total.duracion
-            |duracion|date:"HH:mm"}}</span>
+        <td>
+          <span *ngIf="total.tipo == 'J'">{{
+            total.duracion | duracion | date: "HH:mm"
+          }}</span>
         </td>
         <!-- horas jornada a cumplir -->
-        <td><span *ngIf="total.tipo == 'J'">{{ total.jornada |
-            duracion
-            |
-            date:'HH:mm'}}</span></td>
+        <td>
+          <span *ngIf="total.tipo == 'J'">{{
+            total.jornada | duracion | date: "HH:mm"
+          }}</span>
+        </td>
 
         <!-- diferencia positiva -->
-        <td *ngIf="total.positivo"><span *ngIf="total.tipo == 'J'"
-            style="color:green">{{
-            total.diferencia|duracion|date:'HH:mm' }}</span></td>
+        <td *ngIf="total.positivo">
+          <span *ngIf="total.tipo == 'J'" style="color: green">{{
+            total.diferencia | duracion | date: "HH:mm"
+          }}</span>
+        </td>
         <!-- diferencia negativa -->
-        <td *ngIf="!total.positivo"><span *ngIf="total.tipo == 'J'"
-            style="color:red">-{{
-            total.diferencia|duracion|date:'HH:mm' }}</span></td>
+        <td *ngIf="!total.positivo">
+          <span *ngIf="total.tipo == 'J'" style="color: red"
+            >-{{ total.diferencia | duracion | date: "HH:mm" }}</span
+          >
+        </td>
       </tr>
     </tbody>
   </table>
-
 </div>

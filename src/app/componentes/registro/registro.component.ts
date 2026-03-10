@@ -12,6 +12,7 @@ import { DuracionPipe } from '../../pipes/duracion.pipe';
 import { Cosmos2datetimePipe } from '../../pipes/cosmos2datetime.pipe';
 import { Cosmos2datePipe } from '../../pipes/cosmos2date.pipe';
 import { DatosCtrlRegistro } from './../../interfaces/datos-ctrl-registro';
+import { UsuarioModel } from '../../usuario.model';
 
 @Component({
   selector: 'app-registro',
@@ -36,6 +37,7 @@ export class RegistroComponent {
   @Output() actualizar: EventEmitter<number> = new EventEmitter();
   enModo: typeof RegistroModo = RegistroModo;
 
+  usuario: UsuarioModel = inject(UsuarioModel);
   datepipe: DatePipe = inject(DatePipe);
   cosmos2date: Cosmos2datetimePipe = inject(Cosmos2datetimePipe);
 
@@ -69,7 +71,8 @@ export class RegistroComponent {
         ':00';
 
       this.registro.inicio = inicio;
-      this.registro.modoIniFinAutoMan = 'IM';
+      this.registro.modoIniFinAutoMan += 'IM';
+      this.registro.modifica_inicio = 'S';
     } else {
       var date1 = new Date(
         this.cosmos2date.transform(String(this.registro.fecha + ' 00:00:00')),
@@ -80,7 +83,8 @@ export class RegistroComponent {
         this.horaFinal.value +
         ':00';
       this.registro.final = final;
-      this.registro.modoIniFinAutoMan = 'FM';
+      this.registro.modoIniFinAutoMan += 'FM';
+      this.registro.modifica_final = 'S';
     }
     this.registro.actualizar = true;
 

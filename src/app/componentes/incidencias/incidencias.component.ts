@@ -151,12 +151,16 @@ export class IncidenciasComponent {
         registro.usuario_inicio = this.usuario.matricula;
         registro.validado = 'P';
         registro.usuario_validado = '';
+        registro.modifica_inicio = 'S';
+        registro.modifica_final = 'N';
 
+        //esto no debo permitirlo. admin no graba horarios. siempre el usuario
         if (this.usuario.admin) {
           registro.usuario_inicio = this.usuario.admin_user;
           registro.validado = 'S';
           registro.usuario_validado = this.usuario.admin_user;
         }
+
         registro.timestamp_inicio =
           '' + this.datepipe.transform(new Date(), 'dd/MM/yyyy HH:mm:ss');
       } else if (registro.modoIniFinAutoMan == 'FM') {
@@ -164,7 +168,10 @@ export class IncidenciasComponent {
         registro.usuario_final = this.usuario.matricula;
         registro.validado = 'P';
         registro.usuario_validado = '';
+        registro.modifica_inicio = 'N';
+        registro.modifica_final = 'S';
 
+        //no permitir  ocultar boton actualizar y calendario seleccionar
         if (this.usuario.admin) {
           registro.usuario_final = this.usuario.admin_user;
           registro.validado = 'S';
