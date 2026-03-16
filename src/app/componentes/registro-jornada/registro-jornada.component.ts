@@ -178,8 +178,11 @@ export class RegistroJornadaComponent {
 
   actualizarRegistro(i: number) {
     if (this.isAnterior && this.registros[i].modoIniFinAutoMan != 'VA') {
+      console.log('No actualizo, es de fecha anterior');
       return;
     }
+
+    let validar: boolean = false;
 
     Swal.fire({
       text: 'Actualizando datos',
@@ -200,6 +203,7 @@ export class RegistroJornadaComponent {
         this.registroActual.manual_inicio = 'N';
         this.registroActual.usuario_inicio = this.usuario.matricula;
         this.registroActual.timestamp_inicio = this.registroActual.inicio;
+        this.registroActual.modifica_inicio = 'S';
 
         this.registroActual.validado = 'N';
         this.registroActual.usuario_validado = '';
@@ -211,6 +215,7 @@ export class RegistroJornadaComponent {
         this.registroActual.manual_final = 'N';
         this.registroActual.usuario_final = this.usuario.matricula;
         this.registroActual.timestamp_final = this.registroActual.final;
+        this.registroActual.modifica_final = 'S';
 
         this.registroActual.validado = 'N';
         this.registroActual.usuario_validado = '';
@@ -230,11 +235,10 @@ export class RegistroJornadaComponent {
         //validar registro manual de usuario
         this.registros[i].validado = 'S';
         this.registros[i].usuario_validado = this.usuario.admin_user;
+        validar = true;
       }
       tmpRegistros.push(this.registros[i]);
     }
-
-    console.log('Vamoa a actualizar', tmpRegistros);
 
     this.cosmos.actualizaRegistros(this.usuario, tmpRegistros).subscribe(
       (resp) => {
@@ -246,7 +250,9 @@ export class RegistroJornadaComponent {
             this.registroActual.id = '' + resp.ids[0];
           }
           this.usuario.force = 0;
-          this.router.navigateByUrl('/home');
+          if (!validar) {
+            this.router.navigateByUrl('/home');
+          }
         } else {
           Swal.fire({
             text: 'Error actualizando datos. ' + resp,
@@ -328,8 +334,6 @@ export class RegistroJornadaComponent {
   }
 
   public grabarRegistros() {
-    console.log(this.registroActual);
-
     if (
       this.registroActual.modifica_inicio != 'S' ||
       this.registroActual.modifica_final != 'S'

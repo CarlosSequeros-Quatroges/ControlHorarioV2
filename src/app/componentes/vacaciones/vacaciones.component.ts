@@ -69,7 +69,6 @@ export class VacacionesComponent implements OnInit {
     this.cargaRegistros(this.anio.value || new Date().getFullYear().toString());
 
     window.addEventListener('afterprint', () => {
-      console.log('afterprint event triggered');
       this.presentacion.set('');
       this.listado.set('oculto');
     });
@@ -95,9 +94,6 @@ export class VacacionesComponent implements OnInit {
         this.totalDias = resp.totalDias;
         this.diasAsignados = resp.diasAsignados;
         this.disfrutados = resp.disfrutados;
-
-        console.log('resp.totalDias', resp.totalDias);
-        console.log('resp.disfrutados', resp.disfrutados);
 
         this.pendientes =
           (resp.diasAsignados || 0) - (resp.disfrutados || 0) < 0
@@ -171,13 +167,12 @@ export class VacacionesComponent implements OnInit {
       reader.onload = () => {
         const resuttado: string = reader.result?.toString() || '';
         const b64 = resuttado.split(',')[1];
-        console.log(b64);
         datos.b64UploadFile = b64;
         this.subeCarta(datos);
       };
 
       reader.onerror = function (error) {
-        console.log('Error: ', error);
+        alert('Error leyendo archivo!!');
       };
     }
   }
@@ -199,7 +194,6 @@ export class VacacionesComponent implements OnInit {
       )
       .subscribe(
         (resp: String) => {
-          console.log('Archivo enviado ', resp);
           datos.b64File = datos.b64UploadFile;
           datos.carta = 'S';
           Swal.close();
@@ -237,7 +231,6 @@ export class VacacionesComponent implements OnInit {
           datos.b64UploadFile = b64;
         };
         reader.onerror = function (error) {
-          console.log('Error: ', error);
           alert('Error leyendo archivo!!');
           datos.uploadFile = '';
           datos.b64UploadFile = '';

@@ -1,7 +1,6 @@
 import { Cosmos2minPipe } from './../../pipes/cosmos2min.pipe';
-import { fileURLToPath } from 'node:url';
 import { Jornada } from './../../interfaces/jornada';
-import { Component, inject, TemplateRef } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
@@ -27,7 +26,6 @@ import { Totales } from './../../interfaces/totales';
 import { RespRegistros } from '../../interfaces/resp-registros';
 import { DuracionPipe } from '../../pipes/duracion.pipe';
 import { RegistroComponent } from '../registro/registro.component';
-import { DifPipe } from '../../pipes/dif.pipe';
 import { Min2hourMinPipe } from '../../pipes/min2hour-min.pipe';
 import { Cosmos2datetimePipe } from '../../pipes/cosmos2datetime.pipe';
 
@@ -41,12 +39,8 @@ import { Cosmos2datetimePipe } from '../../pipes/cosmos2datetime.pipe';
     NavbarComponent,
     MatIconModule,
     DuracionPipe,
-    DifPipe,
     Min2hourMinPipe,
     FiltrarPipe,
-    SumPipe,
-    SortPipe,
-    Cosmos2datePipe,
   ],
   templateUrl: './home.component.html',
   styleUrl: './home.component.css',
@@ -298,9 +292,7 @@ export class HomeComponent {
                   );
                   let time = new Date().getTime() - date1.getTime();
                   let duracion: number = parseInt(String(time / 60000), 10);
-                  console.log(duracion);
                   tmp.duracion = duracion.toString();
-                  console.log(tmp.jornada);
                   tmp.diferencia = (
                     Number(tmp.jornada) - Number(tmp.duracion)
                   ).toString();
@@ -420,5 +412,60 @@ export class HomeComponent {
     }
 
     return diasmes;
+  }
+
+  actualizarRegistro(registro: Registro) {
+    //solo validar
+
+    Swal.fire({
+      text: 'Actualizando datos',
+      icon: 'info',
+      showConfirmButton: false,
+    });
+
+    Swal.showLoading();
+
+    var tmpRegistros: Registro[] = new Array<Registro>();
+
+    if (registro.modoIniFinAutoMan == 'VA') {
+      //validar registro manual de usuario
+      tmpRegistros.push(registro);
+      tmpRegistros[0].validado = 'S';
+      tmpRegistros[0].usuario_validado = this.usuario.admin_user;
+
+      this.cosmos.actualizaRegistros(this.usuario, tmpRegistros).subscribe(
+        (resp) => {
+          Swal.close();
+
+          if (resp.errnum == 0) {
+            registro = {
+              ...registro,
+              validado: 'S',
+              usuario_validado: this.usuario.admin_user,
+            };
+
+            const item = this.registros.find((reg) => (reg.id = registro.id));
+            if (item) {
+              item.validado = 'S';
+              item.usuario_validado = this.usuario.admin_user;
+
+              this.registros = [...this.registros];
+            }
+          } else {
+            Swal.fire({
+              text: 'Error actualizando datos. ' + resp,
+              icon: 'warning',
+              showConfirmButton: false,
+            });
+          }
+        },
+        (err) => {
+          Swal.fire({
+            text: err,
+            icon: 'info',
+          });
+        },
+      );
+    }
   }
 }

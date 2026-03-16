@@ -45,11 +45,9 @@ export class CosmosService {
       )
       .pipe(
         map((resp) => {
-          console.log('Respuesta  ' + resp.errdesc);
           return resp;
         }),
         catchError((err) => {
-          console.log('get error catch ' + err);
           return throwError(err.status + ' ' + err.statusText);
         }),
       );
@@ -225,7 +223,6 @@ export class CosmosService {
       })
       .pipe(
         map((resp) => {
-          console.log('Respuesta  ' + resp.errdesc);
           return resp;
         }),
         timeout({
@@ -233,7 +230,6 @@ export class CosmosService {
           with: () => throwError(() => new Error('Timeout Error!!!')),
         }),
         catchError((err) => {
-          console.log('post error catch ' + err);
           return throwError(err.status + ' ' + err.statusText);
         }),
       );

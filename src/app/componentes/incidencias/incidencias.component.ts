@@ -146,7 +146,7 @@ export class IncidenciasComponent {
     var tmpRegistros: Registro[] = new Array<Registro>();
 
     this.incidencias.forEach((registro: Registro, indice) => {
-      if (registro.modoIniFinAutoMan == 'IM') {
+      if ((registro.modoIniFinAutoMan?.indexOf('IM') || 0) > 0) {
         registro.manual_inicio = 'S';
         registro.usuario_inicio = this.usuario.matricula;
         registro.validado = 'P';
@@ -163,7 +163,7 @@ export class IncidenciasComponent {
 
         registro.timestamp_inicio =
           '' + this.datepipe.transform(new Date(), 'dd/MM/yyyy HH:mm:ss');
-      } else if (registro.modoIniFinAutoMan == 'FM') {
+      } else if ((registro.modoIniFinAutoMan?.indexOf('FM') || 0) > 0) {
         registro.manual_final = 'S';
         registro.usuario_final = this.usuario.matricula;
         registro.validado = 'P';

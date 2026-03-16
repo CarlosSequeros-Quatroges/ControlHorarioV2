@@ -58,6 +58,13 @@ export class RegistroComponent {
   //----------------- edicion de registro manual
 
   public modelChanged(ev: Event, formName: any) {
+    if (
+      !this.registro.modoIniFinAutoMan ||
+      typeof this.registro.modoIniFinAutoMan === 'undefined'
+    ) {
+      this.registro.modoIniFinAutoMan = '';
+    }
+
     if (formName == 'horaEntrada') {
       //revisar fecha registro
       var date1 = new Date(
@@ -71,6 +78,9 @@ export class RegistroComponent {
         ':00';
 
       this.registro.inicio = inicio;
+      this.registro.manual_inicio = 'S';
+      this.registro.usuario_inicio = this.usuario.matricula;
+
       this.registro.modoIniFinAutoMan += 'IM';
       this.registro.modifica_inicio = 'S';
     } else {
@@ -83,11 +93,14 @@ export class RegistroComponent {
         this.horaFinal.value +
         ':00';
       this.registro.final = final;
+      this.registro.manual_final = 'S';
+      this.registro.usuario_final = this.usuario.matricula;
       this.registro.modoIniFinAutoMan += 'FM';
       this.registro.modifica_final = 'S';
     }
     this.registro.actualizar = true;
 
+    console.log(this.registro);
     this.calculaDuracion();
     this.actualizar.emit();
   }
