@@ -146,7 +146,12 @@ export class IncidenciasComponent {
     var tmpRegistros: Registro[] = new Array<Registro>();
 
     this.incidencias.forEach((registro: Registro, indice) => {
-      if ((registro.modoIniFinAutoMan?.indexOf('IM') || 0) > 0) {
+      console.log('modo: ' + registro.modoIniFinAutoMan);
+      console.log(registro.modoIniFinAutoMan?.includes('IM'));
+
+      if (registro.modoIniFinAutoMan?.includes('IM')) {
+        console.log('Entro por IM');
+
         registro.manual_inicio = 'S';
         registro.usuario_inicio = this.usuario.matricula;
         registro.validado = 'P';
@@ -156,6 +161,7 @@ export class IncidenciasComponent {
 
         //esto no debo permitirlo. admin no graba horarios. siempre el usuario
         if (this.usuario.admin) {
+          console.log('Entro por IM admin');
           registro.usuario_inicio = this.usuario.admin_user;
           registro.validado = 'S';
           registro.usuario_validado = this.usuario.admin_user;
@@ -163,7 +169,8 @@ export class IncidenciasComponent {
 
         registro.timestamp_inicio =
           '' + this.datepipe.transform(new Date(), 'dd/MM/yyyy HH:mm:ss');
-      } else if ((registro.modoIniFinAutoMan?.indexOf('FM') || 0) > 0) {
+      } else if (registro.modoIniFinAutoMan?.includes('FM')) {
+        console.log('Entro por FM');
         registro.manual_final = 'S';
         registro.usuario_final = this.usuario.matricula;
         registro.validado = 'P';
@@ -173,6 +180,7 @@ export class IncidenciasComponent {
 
         //no permitir  ocultar boton actualizar y calendario seleccionar
         if (this.usuario.admin) {
+          console.log('Entro por FM admin');
           registro.usuario_final = this.usuario.admin_user;
           registro.validado = 'S';
           registro.usuario_validado = this.usuario.admin_user;
