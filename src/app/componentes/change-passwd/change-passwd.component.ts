@@ -1,7 +1,15 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { AbstractControl, ReactiveFormsModule, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
-import { Router,RouterModule,ActivatedRoute } from '@angular/router';
+import {
+  AbstractControl,
+  ReactiveFormsModule,
+  FormControl,
+  FormGroup,
+  ValidationErrors,
+  ValidatorFn,
+  Validators,
+} from '@angular/forms';
+import { Router, RouterModule, ActivatedRoute } from '@angular/router';
 
 import Swal from 'sweetalert2';
 
@@ -9,118 +17,136 @@ import { NavbarComponent } from '../navbar/navbar.component';
 import { UsuarioModel } from './../../usuario.model';
 import { AuthService } from '../../services/auth.service';
 import { NewPasswd } from './../../interfaces/new-passwd';
+import { CartaVacacionesComponent } from '../vacaciones/carta-vacaciones/carta-vacaciones.component';
+import { FooterComponent } from '../footer/footer.component';
 
 @Component({
   selector: 'app-change-passwd',
-  imports: [ReactiveFormsModule,NavbarComponent, CommonModule, RouterModule],
+  imports: [
+    ReactiveFormsModule,
+    NavbarComponent,
+    CommonModule,
+    RouterModule,
+    CartaVacacionesComponent,
+    FooterComponent,
+  ],
   templateUrl: './change-passwd.component.html',
-  styleUrl: './change-passwd.component.css'
+  styleUrl: './change-passwd.component.css',
 })
 export class ChangePasswdComponent {
+  route: ActivatedRoute = inject(ActivatedRoute);
+  usuario: UsuarioModel = inject(UsuarioModel);
+  auth: AuthService = inject(AuthService);
 
-   route: ActivatedRoute = inject(ActivatedRoute);
-   usuario: UsuarioModel = inject(UsuarioModel);
-   auth: AuthService = inject(AuthService);
-
-   //campos formulario y validaciones
+  //campos formulario y validaciones
   newPasswdForm: FormGroup = new FormGroup({
-    oldPassword: new FormControl('', Validators.compose([
-      Validators.required,
-      Validators.minLength(6),
-      Validators.maxLength(30)
-    ])),
-    newPassword: new FormControl('', Validators.compose([
-      Validators.required,
-      Validators.minLength(6),
-      Validators.maxLength(30),
-      this.validateSamePassword
-    ])),
-    confirmPassword: new FormControl('', Validators.compose([
-      Validators.required,
-      Validators.minLength(6),
-      Validators.maxLength(30),
-      this.validateMatchPassword
-    ])),
-
-  })
+    oldPassword: new FormControl(
+      '',
+      Validators.compose([
+        Validators.required,
+        Validators.minLength(6),
+        Validators.maxLength(30),
+      ]),
+    ),
+    newPassword: new FormControl(
+      '',
+      Validators.compose([
+        Validators.required,
+        Validators.minLength(6),
+        Validators.maxLength(30),
+        this.validateSamePassword,
+      ]),
+    ),
+    confirmPassword: new FormControl(
+      '',
+      Validators.compose([
+        Validators.required,
+        Validators.minLength(6),
+        Validators.maxLength(30),
+        this.validateMatchPassword,
+      ]),
+    ),
+  });
 
   error_messages = {
-    'email': [
+    email: [
       { type: 'required', message: 'Introduzca Email.' },
       { type: 'minlength', message: 'Longitud de Email menor de 5.' },
       { type: 'maxlength', message: 'Longitud de Email mayor de 50.' },
-      { type: 'email', message: 'Introduzca un Email válido.' }
+      { type: 'email', message: 'Introduzca un Email válido.' },
     ],
 
-    'password': [
+    password: [
       { type: 'required', message: 'Introduzca clave.' },
       { type: 'minlength', message: 'Tamañó de clave demasiado corto.' },
       { type: 'maxlength', message: 'Tamaño de clave demasiado largo.' },
       { type: 'notMatch', message: 'Las claves no coinciden.' },
-      { type: 'notSame', message: 'La nueva clave debe ser diferente a la anterior.' }
+      {
+        type: 'notSame',
+        message: 'La nueva clave debe ser diferente a la anterior.',
+      },
     ],
+  };
 
-  }
+  constructor(private router: Router) {}
 
-  constructor (
-    private router: Router
-    ){}
-
-  private validateMatchPassword(control: AbstractControl): ValidationErrors | null {
+  private validateMatchPassword(
+    control: AbstractControl,
+  ): ValidationErrors | null {
     const password = control.parent?.get('newPassword');
     const confirmPassword = control.parent?.get('confirmPassword');
-    return password?.value == confirmPassword?.value ? null : { 'notMatch': true };
-
+    return password?.value == confirmPassword?.value
+      ? null
+      : { notMatch: true };
   }
 
-  private validateSamePassword(control: AbstractControl): ValidationErrors | null {
+  private validateSamePassword(
+    control: AbstractControl,
+  ): ValidationErrors | null {
     const oldPassword = control.parent?.get('oldPassword');
     const newPassword = control.parent?.get('newPassword');
-    return oldPassword?.value != newPassword?.value ? null : { 'notSame': true };
-
+    return oldPassword?.value != newPassword?.value ? null : { notSame: true };
   }
 
   graba() {
-    if (this.newPasswdForm.invalid) {return;}
+    if (this.newPasswdForm.invalid) {
+      return;
+    }
 
     Swal.fire({
-      text:'Actualizando clave',
+      text: 'Actualizando clave',
       icon: 'info',
       timer: 1000,
-      showConfirmButton: false
+      showConfirmButton: false,
     });
 
     // llamar a método change-paswwd rest api
 
-
-    let newPassword: NewPasswd  = {} as NewPasswd;
+    let newPassword: NewPasswd = {} as NewPasswd;
     newPassword.email = this.usuario.email;
-    newPassword.password = this.newPasswdForm.get("oldPassword")?.value;
-    newPassword.newPassword = this.newPasswdForm.get("newPassword")?.value;
+    newPassword.password = this.newPasswdForm.get('oldPassword')?.value;
+    newPassword.newPassword = this.newPasswdForm.get('newPassword')?.value;
 
-    this.auth.grabaPassword(newPassword).subscribe(resp => {
+    this.auth.grabaPassword(newPassword).subscribe(
+      (resp) => {
+        Swal.close();
 
-      Swal.close()
-
-      if (resp == ''){
-        this.usuario.force =0
-        this.router.navigateByUrl('/home');
-      }
-      else {
-
+        if (resp == '') {
+          this.usuario.force = 0;
+          this.router.navigateByUrl('/home');
+        } else {
+          Swal.fire({
+            text: resp,
+            icon: 'info',
+          });
+        }
+      },
+      (err) => {
         Swal.fire({
-          text:resp,
+          text: err,
           icon: 'info',
-        })
-      }
-
-    }, (err) => {
-      Swal.fire({
-        text:err,
-        icon: 'info',
-      })
-    })
+        });
+      },
+    );
   }
-
-
 }

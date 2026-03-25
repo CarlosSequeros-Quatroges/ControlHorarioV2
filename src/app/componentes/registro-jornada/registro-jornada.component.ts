@@ -31,6 +31,7 @@ import localeEs from '@angular/common/locales/es';
     NavbarComponent,
     ReactiveFormsModule,
     MatFormFieldModule,
+    FooterComponent,
   ],
   templateUrl: './registro-jornada.component.html',
   styleUrl: './registro-jornada.component.css',

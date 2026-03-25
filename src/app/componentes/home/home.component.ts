@@ -28,6 +28,7 @@ import { DuracionPipe } from '../../pipes/duracion.pipe';
 import { RegistroComponent } from '../registro/registro.component';
 import { Min2hourMinPipe } from '../../pipes/min2hour-min.pipe';
 import { Cosmos2datetimePipe } from '../../pipes/cosmos2datetime.pipe';
+import { FooterComponent } from '../footer/footer.component';
 
 @Component({
   selector: 'app-home',
@@ -41,6 +42,7 @@ import { Cosmos2datetimePipe } from '../../pipes/cosmos2datetime.pipe';
     DuracionPipe,
     Min2hourMinPipe,
     FiltrarPipe,
+    FooterComponent,
   ],
   templateUrl: './home.component.html',
   styleUrl: './home.component.css',

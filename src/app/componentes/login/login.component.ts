@@ -11,6 +11,7 @@ import { Login } from '../../interfaces/login';
 import { LocalStorageService } from '../../services/local-storage.service';
 import { UsuarioModel } from '../../usuario.model';
 import { AuthService } from '../../services/auth.service';
+import { FooterComponent } from '../footer/footer.component';
 
 @Component({
   selector: 'app-login',
@@ -20,6 +21,7 @@ import { AuthService } from '../../services/auth.service';
     MatCardModule,
     MatCheckboxModule,
     RouterModule,
+    FooterComponent,
   ],
   templateUrl: './login.component.html',
   styleUrl: './login.component.css',

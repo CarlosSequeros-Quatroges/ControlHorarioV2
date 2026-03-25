@@ -23,10 +23,17 @@ import { UsuarioModel } from '../../usuario.model';
 import { Router } from '@angular/router';
 import { Registro } from '../../interfaces/registro';
 import { RespBase } from '../../interfaces/resp-base';
+import { FooterComponent } from '../footer/footer.component';
 
 @Component({
   selector: 'app-vacaciones',
-  imports: [CommonModule, MatIconModule, ReactiveFormsModule, NavbarComponent],
+  imports: [
+    CommonModule,
+    MatIconModule,
+    ReactiveFormsModule,
+    NavbarComponent,
+    FooterComponent,
+  ],
   templateUrl: './vacaciones.component.html',
   styleUrl: './vacaciones.component.css',
 })

@@ -14,6 +14,7 @@ import { AuthService } from '../../services/auth.service';
 import { Registro } from '../../interfaces/registro';
 import { NavbarComponent } from '../navbar/navbar.component';
 import { Cosmos2datetimePipe } from '../../pipes/cosmos2datetime.pipe';
+import { FooterComponent } from '../footer/footer.component';
 
 @Component({
   selector: 'app-incidencias',
@@ -22,6 +23,7 @@ import { Cosmos2datetimePipe } from '../../pipes/cosmos2datetime.pipe';
     CommonModule,
     ReactiveFormsModule,
     NavbarComponent,
+    FooterComponent,
   ],
   templateUrl: './incidencias.component.html',
   styleUrl: './incidencias.component.css',

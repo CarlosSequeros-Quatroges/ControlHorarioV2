@@ -8,5 +8,12 @@
 }
 p {
   color: rgb(234, 239, 240);
-
+  margin: 0.3rem 0rem !important;
+}
+div {
+  margin-top: 2rem;
+  border-radius: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
