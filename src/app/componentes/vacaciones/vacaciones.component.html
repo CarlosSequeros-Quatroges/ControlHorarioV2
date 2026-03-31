@@ -143,12 +143,12 @@
       </td>
     </tr>
 
-    <tr *ngIf="vacaciones.length === 0">
+    <tr *ngIf="vacaciones && vacaciones.length === 0">
       <td colspan="2">
         No se han encontrado vacaciones para el ejercicio seleccionado.
       </td>
     </tr>
-    <tr *ngIf="vacaciones.length !== 0">
+    <tr *ngIf="vacaciones && vacaciones.length !== 0">
       <td class="totales">Total días:</td>
       <td class="totales">{{ totalDias }}</td>
       <td class="totales"></td>
