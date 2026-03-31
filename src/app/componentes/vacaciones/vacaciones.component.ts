@@ -10,7 +10,7 @@ import {
   WritableSignal,
 } from '@angular/core';
 import { CommonModule, DatePipe, formatDate } from '@angular/common';
-import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 
 import Swal from 'sweetalert2';
 import { CosmosService } from '../../services/cosmos.service';
@@ -24,6 +24,24 @@ import { Router } from '@angular/router';
 import { Registro } from '../../interfaces/registro';
 import { RespBase } from '../../interfaces/resp-base';
 import { FooterComponent } from '../footer/footer.component';
+import { MatFormFieldModule } from '@angular/material/form-field';
+
+import { MatInputModule } from '@angular/material/input';
+import {
+  MatDatepickerInputEvent,
+  MatDatepickerModule,
+  MatCalendarCellClassFunction,
+  DateRange,
+  MAT_RANGE_DATE_SELECTION_MODEL_PROVIDER,
+  DefaultMatCalendarRangeStrategy,
+  MatRangeDateSelectionModel,
+} from '@angular/material/datepicker';
+import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatButtonModule } from '@angular/material/button';
+import { MatChipsModule } from '@angular/material/chips';
+
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-vacaciones',
@@ -33,9 +51,20 @@ import { FooterComponent } from '../footer/footer.component';
     ReactiveFormsModule,
     NavbarComponent,
     FooterComponent,
+    MatFormFieldModule,
+    MatToolbarModule,
+    MatButtonModule,
+    MatDatepickerModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSidenavModule,
+    FormsModule,
+    ReactiveFormsModule,
+    MatChipsModule,
   ],
   templateUrl: './vacaciones.component.html',
   styleUrl: './vacaciones.component.css',
+  providers: [DefaultMatCalendarRangeStrategy, MatRangeDateSelectionModel],
 })
 export class VacacionesComponent implements OnInit {
   vacaciones: RegistroVacaciones[] = [];
@@ -56,12 +85,26 @@ export class VacacionesComponent implements OnInit {
   presentacion: WritableSignal<string> = signal('');
   listado: WritableSignal<string> = signal('oculto');
 
+  diasVacaciones!: FormControl;
+  verCalendario: boolean = false;
+
+  readonly range = new FormGroup({
+    start: new FormControl<Date | null>(null),
+    end: new FormControl<Date | null>(null),
+  });
+  selectedDateRange: DateRange<Date | null> | undefined = new DateRange(
+    null,
+    null,
+  );
+
   constructor(
     private cosmos: CosmosService,
-    private cosmos2date: Cosmos2datePipe,
     private datepipe: DatePipe,
     public usuario: UsuarioModel,
     public router: Router,
+
+    private readonly selectionModel: MatRangeDateSelectionModel<Date>,
+    private readonly selectionStrategy: DefaultMatCalendarRangeStrategy<Date>,
   ) {}
 
   ngOnInit(): void {
@@ -248,5 +291,79 @@ export class VacacionesComponent implements OnInit {
         datos.b64UploadFile = '';
       }
     }
+  }
+
+  rangeChanged(selectedDate: Date, callback: Function) {
+    const selection = this.selectionModel.selection,
+      newSelection = this.selectionStrategy.selectionFinished(
+        selectedDate,
+        selection,
+      );
+
+    this.selectionModel.updateSelection(newSelection, this);
+    // sync the selection the form controls
+    this.selectedDateRange = new DateRange<Date>(
+      newSelection.start,
+      newSelection.end,
+    );
+    if (callback) {
+      callback();
+    }
+  }
+
+  setFormRangeControls() {
+    this.range.setValue({
+      start: this.selectedDateRange?.start || null,
+      end: this.selectedDateRange?.end || null,
+    });
+
+    console.log('setFormRangeControls', this.range.value);
+  }
+
+  enviarSolicitud() {
+    console.log('enviarSolicitud', this.selectedDateRange);
+    if (!this.selectedDateRange || !this.selectedDateRange.start) {
+      alert('Seleccione un rango de fechas');
+      return;
+    }
+
+    Swal.fire({
+      text: 'Enviando solicitud',
+      icon: 'info',
+      showConfirmButton: false,
+    });
+    Swal.showLoading();
+
+    const desde: string =
+      this.datepipe.transform(this.selectedDateRange.start, 'dd/MM/yyyy') || '';
+    const hasta: string =
+      this.datepipe.transform(this.selectedDateRange.end, 'dd/MM/yyyy') ||
+      desde;
+
+    this.cosmos
+      .solicitaVacaciones(
+        this.usuario.codigo,
+        this.usuario.matricula,
+        this.usuario.nombre,
+        desde,
+        hasta,
+      )
+      .subscribe(
+        (resp: String) => {
+          Swal.close();
+          this.verCalendario = false;
+          this.cargaRegistros(
+            this.anio.value || new Date().getFullYear().toString(),
+          );
+        },
+        (err) => {
+          Swal.close();
+
+          Swal.fire({
+            text: err,
+            icon: 'info',
+          });
+        },
+      );
   }
 }

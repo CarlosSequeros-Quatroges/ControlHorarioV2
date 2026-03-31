@@ -12,6 +12,7 @@ import { AuthService } from './auth.service';
 import { RespIncidencias } from '../interfaces/resp-incidencias';
 import { RespActualizaRegistros } from '../interfaces/resp-actualiza-registros';
 import { RespVacaciones } from '../interfaces/resp-vacaciones';
+import { DateRange } from '@angular/material/datepicker';
 
 @Injectable({
   providedIn: 'root',
@@ -228,6 +229,45 @@ export class CosmosService {
         timeout({
           each: 6000,
           with: () => throwError(() => new Error('Timeout Error!!!')),
+        }),
+        catchError((err) => {
+          return throwError(err.status + ' ' + err.statusText);
+        }),
+      );
+  }
+
+  solicitaVacaciones(
+    empresa: string,
+    matricula: string,
+    nombre: string,
+    desde: string,
+    hasta: string,
+  ): Observable<String> {
+    const headers = new HttpHeaders()
+      .append('Content-Type', 'application/json')
+      .append('Access-Control-Allow-Methods', 'POST')
+      .append('Access-Control-Allow-Origin', '*')
+      .append(
+        'Access-Control-Allow-Headers',
+        'origin, content-type, accept,authorization,securityToken,access-control-allow-origin',
+      );
+
+    const data = {
+      empresa: empresa,
+      matricula: matricula,
+      nombre: nombre,
+      desde: desde,
+      hasta: hasta,
+    };
+
+    return this.http
+      .post<RespBase>(`${this.url}/solicita-vacaciones`, data, { headers })
+      .pipe(
+        map((resp) => {
+          if (resp.errnum == 0) {
+            return '';
+          }
+          return resp.errdesc + '(' + resp.errnum + ')';
         }),
         catchError((err) => {
           return throwError(err.status + ' ' + err.statusText);

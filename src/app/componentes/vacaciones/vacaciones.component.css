@@ -9,6 +9,13 @@
   align-items: center;
 }
 
+.contenedor-vertical {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
 .contenedor-horizontal-izquierda {
   display: flex;
   flex-direction: row;
@@ -158,4 +165,36 @@ td.totales {
     font-size: 0.8rem;
     padding: 0 0;
   }
+}
+
+/* 1. Círculos de Inicio y Fin (los días seleccionados) */
+::ng-deep .mat-calendar-body-selected {
+  background-color: #00a30ed3 !important; /* Tu color principal */
+  color: white !important;
+}
+
+/* 2. El fondo del rango (los días que están en medio) */
+::ng-deep .mat-calendar-body-in-range::before {
+  background: rgba(
+    101,
+    255,
+    87,
+    0.212
+  ) !important; /* Un tono suave del mismo color */
+}
+
+/* 3. El color del texto de los días intermedios */
+::ng-deep .mat-calendar-body-in-range .mat-calendar-body-cell-content {
+  color: #00270d !important;
+}
+
+/* 4. Suavizar los bordes del rango para que parezca una pastilla continua */
+::ng-deep
+  .mat-calendar-body-range-start:not(.mat-calendar-body-range-end)::before {
+  border-radius: 100px 0 0 100px !important;
+}
+
+::ng-deep
+  .mat-calendar-body-range-end:not(.mat-calendar-body-range-start)::before {
+  border-radius: 0 100px 100px 0 !important;
 }

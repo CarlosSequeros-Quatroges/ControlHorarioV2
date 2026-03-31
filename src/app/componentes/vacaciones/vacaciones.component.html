@@ -1,9 +1,35 @@
 <app-navbar class="no-print"></app-navbar>
 <div class="contenedor-horizontal">
   <h2>Resumen de vacaciones</h2>
-  <button class="no-print boton-icono" (click)="listar()">
-    <i class="fas fa-print"></i><span>Listado</span>
-  </button>
+  <div class="contenedor-vertical">
+    <button class="no-print boton-icono" (click)="listar()">
+      <i class="fas fa-print"></i><span>Listado</span>
+    </button>
+
+    <button
+      class="no-print boton-icono"
+      (click)="verCalendario = !verCalendario"
+    >
+      <mat-icon>beach_access</mat-icon><span>Solicitar Vacaciones</span>
+    </button>
+    @if (verCalendario) {
+      <div class="filtro-fecha">
+        <h4 class="text-left titulo">Solicitar dias de vacaciones</h4>
+
+        <mat-calendar
+          [selected]="this.selectedDateRange"
+          [comparisonStart]="this.selectedDateRange!.start"
+          [comparisonEnd]="this.selectedDateRange!.end"
+          (selectedChange)="
+            this.rangeChanged($event, setFormRangeControls.bind(this))
+          "
+        ></mat-calendar>
+      </div>
+      <button class="no-print boton-icono" (click)="enviarSolicitud()">
+        <i class="fas fa-check"></i><span>Enviar</span>
+      </button>
+    }
+  </div>
 </div>
 <h4 class="contenedor-horizontal-izquierda">
   <label>Empleado: {{ usuario.nombre }}</label>
@@ -23,6 +49,7 @@
     }
   </select>
 </h4>
+
 <h4>
   Dias asignados: {{ diasAsignados }}. Disfrutados:
   {{ disfrutados }} Pendientes: {{ pendientes }}
