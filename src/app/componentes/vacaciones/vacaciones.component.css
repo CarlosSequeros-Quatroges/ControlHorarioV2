@@ -78,6 +78,9 @@ td.totales {
 .icon-amarillo {
   color: orange;
 }
+.icon-rojo {
+  color: rgb(255, 53, 39);
+}
 
 .boton-icono {
   border: none;

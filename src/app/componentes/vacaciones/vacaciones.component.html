@@ -58,19 +58,54 @@
   <thead>
     <tr>
       <th scope="col">Fecha inicio</th>
+      <th scope="col">Fecha fin</th>
       <th scope="col">Días</th>
+      <th></th>
       <th scope="col">Observaciones</th>
       <th scope="col" class="no-print">Carta</th>
     </tr>
   </thead>
   <tbody>
     <tr *ngFor="let vac of vacaciones">
-      <td>{{ vac.fecha }}</td>
-      <td>{{ vac.dias }}</td>
+      <td>
+        @if (vac.validar == "S" && usuario.admin) {
+          <input type="date" [(ngModel)]="vac.fecha" />
+        } @else {
+          {{ vac.fecha | date: "dd-MM-yyyy" }}
+        }
+      </td>
+      <td>
+        @if (vac.validar == "S" && usuario.admin) {
+          <input type="date" [(ngModel)]="vac.hasta" />
+        } @else {
+          {{ vac.hasta | date: "dd-MM-yyyy" }}
+        }
+      </td>
+      <td>
+        @if (vac.validar == "S" && usuario.admin) {
+          <input type="number" [(ngModel)]="vac.dias" />
+        } @else {
+          {{ vac.dias }}
+        }
+      </td>
+      <td>
+        @if (vac.validar == "S" && usuario.admin) {
+          <label for="ejercicio">Ejercicio:</label>
+          <input type="number" [(ngModel)]="vac.ejercicio" />
+        }
+      </td>
       <td>
         <div class="td-icon">
-          @if (vac.observacion === "P") {
-            <mat-icon class="icon-amarillo">timer</mat-icon>Pendiente
+          @if (vac.validar === "S") {
+            @if (usuario.admin) {
+              <mat-icon class="icon-rojo">help_outline</mat-icon>Validar
+              solicitud
+            } @else {
+              <mat-icon class="icon-rojo">help_outline</mat-icon>Solicitud
+              pendiente de validación
+            }
+          } @else if (vac.observacion === "P") {
+            <mat-icon class="icon-amarillo">timer</mat-icon>Pendiente disfrutar
           } @else {
             <mat-icon class="no-print icon-verde">check_circle</mat-icon
             >Disfrutado
@@ -80,64 +115,75 @@
 
       <td class="no-print">
         <div class="td-icon td-files">
-          @if (vac.carta === "N" && usuario.admin) {
-            <button (click)="verCarta(vac)" class="boton-icono">
-              <i class="fas fa-print"></i>
-            </button>
-          }
-          @if (vac.carta === "N" && !usuario.admin) {
-            <button class="boton-icono no-click">
-              <i class="fas fa-question-circle"></i>
-            </button>
-          }
-
-          @if (vac.carta === "S") {
-            <button (click)="descargaCarta(vac)" class="boton-icono">
-              <i class="fas fa-file-pdf"></i>
-            </button>
-          }
-          @if (vac.carta === "N" && usuario.admin) {
-            @if (!vac.uploadFile || vac.uploadFile === "") {
-              <button
-                class="boton-icono"
-                type="button"
-                mat-raised-button
-                (click)="fileInput.click()"
-              >
-                <i class="fas fa-folder-open"></i>
-              </button>
-            } @else {
-              <button
-                class="boton-icono icon-verde"
-                type="button"
-                mat-raised-button
-                (click)="subeCarta(vac)"
-              >
-                <i class="fas fa-file-arrow-up"></i>
+          @if (vac.validar !== "S") {
+            @if (vac.carta === "N" && usuario.admin) {
+              <button (click)="verCarta(vac)" class="boton-icono">
+                <i class="fas fa-print"></i>
               </button>
             }
-            <input
-              hidden
-              accept="application/pdf"
-              (change)="onFileChange($event, vac)"
-              #fileInput
-              type="file"
-              id="file"
-            />
+            @if (vac.carta === "N" && !usuario.admin) {
+              <button class="boton-icono no-click">
+                <i class="fas fa-question-circle"></i>
+              </button>
+            }
 
-            <div
-              class="drop-file-area"
-              (dragover)="onDragOver($event)"
-              (drop)="onDropSuccess($event, vac)"
-            >
-              <label class="custom-file-upload">
-                {{
-                  !vac.uploadFile || vac.uploadFile === ""
-                    ? "Arrastrar pdf..."
-                    : vac.uploadFile
-                }}</label
+            @if (vac.carta === "S") {
+              <button (click)="descargaCarta(vac)" class="boton-icono">
+                <i class="fas fa-file-pdf"></i>
+              </button>
+            }
+            @if (vac.carta === "N" && usuario.admin) {
+              @if (!vac.uploadFile || vac.uploadFile === "") {
+                <button
+                  class="boton-icono"
+                  type="button"
+                  mat-raised-button
+                  (click)="fileInput.click()"
+                >
+                  <i class="fas fa-folder-open"></i>
+                </button>
+              } @else {
+                <button
+                  class="boton-icono icon-verde"
+                  type="button"
+                  mat-raised-button
+                  (click)="subeCarta(vac)"
+                >
+                  <i class="fas fa-file-arrow-up"></i>
+                </button>
+              }
+              <input
+                hidden
+                accept="application/pdf"
+                (change)="onFileChange($event, vac)"
+                #fileInput
+                type="file"
+                id="file"
+              />
+
+              <div
+                class="drop-file-area"
+                (dragover)="onDragOver($event)"
+                (drop)="onDropSuccess($event, vac)"
               >
-            </div>
+                <label class="custom-file-upload">
+                  {{
+                    !vac.uploadFile || vac.uploadFile === ""
+                      ? "Arrastrar pdf..."
+                      : vac.uploadFile
+                  }}</label
+                >
+              </div>
+            }
+          } @else if (usuario.admin) {
+            <button
+              class="boton-icono icon-verde"
+              type="button"
+              mat-raised-button
+              (click)="validaSolicitud(vac)"
+            >
+              <i class="fas fa-calendar-check"></i>
+            </button>
           }
         </div>
       </td>

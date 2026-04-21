@@ -1,5 +1,6 @@
 import {
   Component,
+  computed,
   ElementRef,
   HostListener,
   Input,
@@ -102,6 +103,7 @@ export class VacacionesComponent implements OnInit {
     private datepipe: DatePipe,
     public usuario: UsuarioModel,
     public router: Router,
+    public cosmos2date: Cosmos2datePipe,
 
     private readonly selectionModel: MatRangeDateSelectionModel<Date>,
     private readonly selectionStrategy: DefaultMatCalendarRangeStrategy<Date>,
@@ -359,6 +361,45 @@ export class VacacionesComponent implements OnInit {
         (err) => {
           Swal.close();
 
+          Swal.fire({
+            text: err,
+            icon: 'info',
+          });
+        },
+      );
+  }
+
+  validaSolicitud(datos: RegistroVacaciones) {
+    console.log('validaSolicitud', datos);
+
+    Swal.fire({
+      text: 'Validando solicitud 123',
+      icon: 'info',
+      showConfirmButton: false,
+    });
+    Swal.showLoading();
+
+    const desde: string =
+      this.datepipe.transform(datos.fecha, 'dd/MM/yyyy') || '';
+    const hasta: string =
+      this.datepipe.transform(datos.hasta, 'dd/MM/yyyy') || desde;
+
+    console.log('validaSolicitud', datos, desde, hasta);
+
+    this.cosmos
+      .validaSolicitud(datos.id, desde, hasta, datos.dias, datos.ejercicio)
+      .subscribe(
+        (resp: String) => {
+          console.log('validaSolicitud resp', resp);
+          Swal.close();
+          this.cargaRegistros(
+            this.anio.value || new Date().getFullYear().toString(),
+          );
+        },
+        (err) => {
+          Swal.close();
+
+          console.log('validaSolicitud err', err);
           Swal.fire({
             text: err,
             icon: 'info',

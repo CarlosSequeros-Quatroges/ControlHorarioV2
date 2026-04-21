@@ -274,4 +274,43 @@ export class CosmosService {
         }),
       );
   }
+
+  validaSolicitud(
+    id: number,
+    desde: string,
+    hasta: string,
+    dias: number,
+    ejercicio: string,
+  ): Observable<String> {
+    const headers = new HttpHeaders()
+      .append('Content-Type', 'application/json')
+      .append('Access-Control-Allow-Methods', 'POST')
+      .append('Access-Control-Allow-Origin', '*')
+      .append(
+        'Access-Control-Allow-Headers',
+        'origin, content-type, accept,authorization,securityToken,access-control-allow-origin',
+      );
+
+    const data = {
+      id: id,
+      desde: desde,
+      hasta: hasta,
+      dias: dias,
+      ejercicio: ejercicio,
+    };
+
+    return this.http
+      .post<RespBase>(`${this.url}/valida-solicitud`, data, { headers })
+      .pipe(
+        map((resp) => {
+          if (resp.errnum == 0) {
+            return '';
+          }
+          return resp.errdesc + '(' + resp.errnum + ')';
+        }),
+        catchError((err) => {
+          return throwError(err.status + ' ' + err.statusText);
+        }),
+      );
+  }
 }

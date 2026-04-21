@@ -1,4 +1,5 @@
 export interface RegistroVacaciones {
+  id: number;
   fechareg: string;
   fecha: string;
   dias: number;
@@ -10,4 +11,5 @@ export interface RegistroVacaciones {
 
   uploadFile: string;
   b64UploadFile: string;
+  validar: string;
 }
