@@ -1,0 +1,47 @@
+.titulos {
+  border-bottom: 1px solid rgb(0, 0, 0);
+  padding-bottom: 5px;
+  margin-bottom: 5px;
+}
+
+mat-label {
+  font-size: 0.7rem;
+}
+
+mat-select {
+  font-size: 0.7rem;
+}
+
+mat-form-field {
+  width: 140px;
+  line-height: 1;
+}
+
+/* Contenedor común para cabecera y filas */
+.grid-listado {
+  display: grid;
+  /* Esto crea 7 columnas iguales. Si prefieres que unas sean más anchas que otras, 
+     puedes cambiar '1fr' por medidas fijas como '100px 80px 80px 100px 100px 100px 100px' */
+  grid-template-columns: repeat(7, 1fr);
+  gap: 10px; /* Espacio entre columnas */
+  align-items: center;
+  padding: 10px;
+  color: rgb(0, 0, 0);
+  margin: 5px 0;
+}
+
+/* Estilo para la cabecera (opcional) */
+.cabecera-listado {
+  font-weight: bold;
+  border-bottom: 2px solid #ccc;
+  background-color: #919191;
+}
+
+/* Estilo para las filas (opcional) */
+.fila-listado {
+  border-bottom: 1px solid #333333;
+}
+
+.fila-par {
+  background-color: #f2f2f2;
+}

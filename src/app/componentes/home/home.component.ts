@@ -1,34 +1,40 @@
-import { Cosmos2minPipe } from './../../pipes/cosmos2min.pipe';
-import { Jornada } from './../../interfaces/jornada';
-import { Component, inject } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
-import { Router, RouterModule } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
+import {
+  Component,
+  inject,
+  signal,
+  ɵunwrapWritableSignal,
+} from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
+import { Router, RouterModule } from '@angular/router';
 import Swal from 'sweetalert2';
+import { Jornada } from './../../interfaces/jornada';
+import { Cosmos2minPipe } from './../../pipes/cosmos2min.pipe';
 
 import { NavbarComponent } from '../navbar/navbar.component';
 
-import { FiltrarPipe } from '../../pipes/filtrar.pipe';
-import { SumPipe } from '../../pipes/sum.pipe';
-import { SortPipe } from '../../pipes/sort.pipe';
 import { Cosmos2datePipe } from '../../pipes/cosmos2date.pipe';
+import { FiltrarPipe } from '../../pipes/filtrar.pipe';
+import { SortPipe } from '../../pipes/sort.pipe';
+import { SumPipe } from '../../pipes/sum.pipe';
 
 import { AuthService } from '../../services/auth.service';
 import { CosmosService } from '../../services/cosmos.service';
 
-import { UsuarioModel } from '../../usuario.model';
 import { DatosCtrlRegistro } from '../../interfaces/datos-ctrl-registro';
-import { RegistroModo } from '../../interfaces/registro-modo';
 import { Registro } from '../../interfaces/registro';
-import { Totales } from './../../interfaces/totales';
+import { RegistroModo } from '../../interfaces/registro-modo';
 import { RespRegistros } from '../../interfaces/resp-registros';
-import { DuracionPipe } from '../../pipes/duracion.pipe';
-import { RegistroComponent } from '../registro/registro.component';
-import { Min2hourMinPipe } from '../../pipes/min2hour-min.pipe';
 import { Cosmos2datetimePipe } from '../../pipes/cosmos2datetime.pipe';
+import { Min2hourMinPipe } from '../../pipes/min2hour-min.pipe';
+import { UsuarioModel } from '../../usuario.model';
 import { FooterComponent } from '../footer/footer.component';
+import { Totales } from './../../interfaces/totales';
+import { HomeScreenComponent } from './home-screen/home-screen.component';
+import { HomeListComponent } from './home-list/home-list.component';
+import { windowCount } from 'rxjs';
 
 @Component({
   selector: 'app-home',
@@ -36,25 +42,29 @@ import { FooterComponent } from '../footer/footer.component';
     RouterModule,
     CommonModule,
     ReactiveFormsModule,
-    RegistroComponent,
     NavbarComponent,
     MatIconModule,
-    DuracionPipe,
     Min2hourMinPipe,
-    FiltrarPipe,
     FooterComponent,
+    HomeScreenComponent,
+    HomeListComponent,
   ],
   templateUrl: './home.component.html',
   styleUrl: './home.component.css',
 })
 export class HomeComponent {
-  public datos!: DatosCtrlRegistro;
+  datos = signal<DatosCtrlRegistro>({
+    bloqueado: false,
+    modo: RegistroModo.EDICION,
+    administrador: true,
+  });
+
+  public registros: Registro[] = [];
+  public hayRegistroActual: boolean = false;
+  public totales: Totales[] = [];
+
   enModo: typeof RegistroModo = RegistroModo;
 
-  public registros!: Registro[];
-  public hayRegistroActual: boolean = false;
-
-  public totales!: Totales[];
   public date!: Date;
   public totalesMes!: Totales;
   public incidencias!: number;
@@ -78,23 +88,31 @@ export class HomeComponent {
   cosmos2datetimePipe: Cosmos2datetimePipe = inject(Cosmos2datetimePipe);
   Cosmos2minPipe: Cosmos2minPipe = inject(Cosmos2minPipe);
 
+  imprimir: boolean = false;
+
   constructor() {
-    this.datos = {
-      bloqueado: true,
-      modo: this.enModo.REGISTRO,
-      administrador: false,
-    };
+    console.log('HomeComponent constructor');
+
+    console.log('datos home:', this.datos());
   }
 
   ngOnInit() {
-    this.datos = {
-      bloqueado: false,
-      modo: this.enModo.EDICION,
-      administrador: false,
-    };
+    this.imprimir = false;
+
+    console.log('HomeComponent ngOnInit');
 
     if (this.usuario.admin) {
-      this.datos.administrador = true;
+      this.datos.set({
+        bloqueado: false,
+        modo: RegistroModo.EDICION,
+        administrador: true,
+      });
+    } else {
+      this.datos.set({
+        bloqueado: false,
+        modo: RegistroModo.EDICION,
+        administrador: false,
+      });
     }
 
     this.date = new Date();
@@ -343,6 +361,10 @@ export class HomeComponent {
             : false;
 
         Swal.close();
+
+        console.log('hc registros:', this.registros);
+        console.log('hc totales:', this.totales);
+        console.log('hc datos:', this.datos());
       },
       (err) => {
         Swal.close();
@@ -469,5 +491,12 @@ export class HomeComponent {
         },
       );
     }
+  }
+
+  imprimirListado() {
+    this.imprimir = true;
+    setTimeout(() => {
+      window.print();
+    }, 300);
   }
 }

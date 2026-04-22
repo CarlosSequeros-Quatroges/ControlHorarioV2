@@ -170,12 +170,12 @@ export class VacacionesComponent implements OnInit {
   listar() {
     this.presentacion.set('oculto');
     this.listado.set('');
+
     setTimeout(() => {
       document.title = `Vacaciones ${this.ejercicio} - ${this.usuario.nombre}`;
       window.print();
     }, 1000);
   }
-
   fechaListado(): string {
     return this.datepipe.transform(new Date(), 'dd/MM/yyyy HH:mm:ss') || '';
   }

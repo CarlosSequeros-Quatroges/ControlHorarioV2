@@ -1,0 +1,88 @@
+<div *ngIf="registros">
+  <div>
+    <h3 class="text-left">REGISTROS DE JORNADA {{ mes }}</h3>
+    <!-- 
+    poner fecha de listado
+    datos de empleado
+    totales final de mes
+    -->
+  </div>
+
+  <!--TOTALES DIA A DIA-->
+
+  <div class="cabecera-listado grid-listado">
+    <a>Fecha</a>
+    <a>Inicio</a>
+    <a>Final</a>
+    <a>Parcial</a>
+    <a>Realizada</a>
+    <a>Jornada</a>
+    <a>Diferencia</a>
+  </div>
+
+  @for (
+    total of totales;
+    track total.fecha;
+    let i = $index;
+    let isEven = $even
+  ) {
+    <div
+      class="fila-listado"
+      [class.fila-par]="isEven"
+      [class.fila-impar]="!isEven"
+    >
+      @if ((registros | filtrar: "inicio" : total.fecha).length == 0) {
+        <div class="grid-listado">
+          <span>{{ total.fecha }}</span>
+          <span>{{
+            total.tipo == "F"
+              ? "No laborable "
+              : total.tipo == "V"
+                ? "Vacaciones"
+                : "Sin registros"
+          }}</span>
+          <span></span>
+          <span></span>
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+      }
+
+      @for (
+        registro of registros | filtrar: "inicio" : total.fecha;
+        track registro.id;
+        let j = $index
+      ) {
+        <div class="grid-listado">
+          @if (j == 0) {
+            <span>{{ total.fecha }}</span>
+            <span>{{ registro.inicio | cosmos2datetime | date: "HH:mm" }}</span>
+            <span>{{ registro.final | cosmos2datetime | date: "HH:mm" }}</span>
+            @if ((registros | filtrar: "inicio" : total.fecha).length == 1) {
+              <span></span>
+            } @else {
+              <span>{{ registro.duracion | min2hourMin }}</span>
+            }
+            <span>{{ total.duracion | min2hourMin }}</span>
+            <span>{{ total.jornada | min2hourMin }}</span>
+            <span *ngIf="total.positivo">{{
+              total.diferencia | min2hourMin
+            }}</span>
+            <span *ngIf="!total.positivo"
+              >-{{ total.diferencia | min2hourMin }}</span
+            >
+          } @else {
+            <span></span>
+            <span>{{ registro.inicio | cosmos2datetime | date: "HH:mm" }}</span>
+            <span>{{ registro.final | cosmos2datetime | date: "HH:mm" }}</span>
+            <span>{{ registro.duracion | min2hourMin }}</span>
+            <span></span>
+            <span></span>
+            <span></span>
+          }
+        </div>
+      }
+    </div>
+  }
+</div>

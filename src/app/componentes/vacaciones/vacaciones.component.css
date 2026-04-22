@@ -43,7 +43,7 @@ table th {
 .td-icon {
   display: flex;
   align-items: center;
-  height: 47px;
+  height: 20px;
 }
 .td-icon .mat-icon {
   margin-right: 0.5rem;
@@ -52,7 +52,7 @@ table th {
 .td-files {
   display: flex;
   align-items: center;
-  height: 47px;
+  height: 20px;
 }
 .td-files .boton-icono {
   margin-right: 1rem;

@@ -71,14 +71,14 @@
         @if (vac.validar == "S" && usuario.admin) {
           <input type="date" [(ngModel)]="vac.fecha" />
         } @else {
-          {{ vac.fecha | date: "dd-MM-yyyy" }}
+          {{ vac.fecha | date: "dd/MM/yyyy" }}
         }
       </td>
       <td>
         @if (vac.validar == "S" && usuario.admin) {
           <input type="date" [(ngModel)]="vac.hasta" />
         } @else {
-          {{ vac.hasta | date: "dd-MM-yyyy" }}
+          {{ vac.hasta | date: "dd/MM/yyyy" }}
         }
       </td>
       <td>
@@ -101,11 +101,12 @@
               <mat-icon class="icon-rojo">help_outline</mat-icon>Validar
               solicitud
             } @else {
-              <mat-icon class="icon-rojo">help_outline</mat-icon>Solicitud
-              pendiente de validación
+              <mat-icon class="no-print icon-rojo">help_outline</mat-icon
+              >Solicitud pendiente de validación
             }
           } @else if (vac.observacion === "P") {
-            <mat-icon class="icon-amarillo">timer</mat-icon>Pendiente disfrutar
+            <mat-icon class="no-print icon-amarillo">timer</mat-icon>Pendiente
+            disfrutar
           } @else {
             <mat-icon class="no-print icon-verde">check_circle</mat-icon
             >Disfrutado

@@ -17,6 +17,7 @@ export const routes: Routes = [
     title: 'Registro de jornada',
     canActivate: [authGuard],
   },
+
   {
     path: 'registro-jornada',
     component: RegistroJornadaComponent,
