@@ -100,7 +100,6 @@ export class RegistroComponent {
     }
     this.registro.actualizar = true;
 
-    console.log(this.registro);
     this.calculaDuracion();
     this.actualizar.emit();
   }

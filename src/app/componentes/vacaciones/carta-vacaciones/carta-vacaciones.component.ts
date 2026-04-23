@@ -16,16 +16,12 @@ export class CartaVacacionesComponent implements OnInit {
 
   private router = inject(Router);
 
-  /*
-  public fechainicio: string = '';
-  public fechafinal: string = '';
-  public dias: number = 0;
-  public ejercicio: string = '';
-*/
+  public fechaIncorporar!: Date;
   public datos!: RegistroVacaciones;
   constructor(public usuario: UsuarioModel) {
     this.datos = this.router.getCurrentNavigation()?.extras.state?.['data'];
-    console.log(this.datos);
+    this.fechaIncorporar = new Date(this.datos.hasta);
+    this.fechaIncorporar.setDate(this.fechaIncorporar.getDate() + 1);
   }
 
   ngOnInit(): void {}

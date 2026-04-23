@@ -38,25 +38,14 @@ export class HomeScreenComponent {
   datos!: DatosCtrlRegistro;
 
   constructor() {
-    console.log('HomeScreenComponent constructor');
     effect(() => {
-      console.log('HomeScreenComponent effect - datos changed:');
       this.datos = {
         bloqueado: this.bloqueado,
         administrador: this.administrador,
         modo: this.modo,
       };
-      console.log('datos', this.datos);
-      console.log('Registros', this.registros);
-      console.log('totales', this.totales);
     });
   }
 
-  ngOnInit() {
-    console.log('HomeScreenComponent ngOnInit');
-    console.log('datos', this.datos);
-    console.log('hayRegistroActual:', this.hayRegistroActual);
-    console.log('Registros', this.registros);
-    console.log('totales', this.totales);
-  }
+  ngOnInit() {}
 }

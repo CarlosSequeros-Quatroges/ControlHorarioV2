@@ -90,16 +90,10 @@ export class HomeComponent {
 
   imprimir: boolean = false;
 
-  constructor() {
-    console.log('HomeComponent constructor');
-
-    console.log('datos home:', this.datos());
-  }
+  constructor() {}
 
   ngOnInit() {
     this.imprimir = false;
-
-    console.log('HomeComponent ngOnInit');
 
     if (this.usuario.admin) {
       this.datos.set({
@@ -361,10 +355,6 @@ export class HomeComponent {
             : false;
 
         Swal.close();
-
-        console.log('hc registros:', this.registros);
-        console.log('hc totales:', this.totales);
-        console.log('hc datos:', this.datos());
       },
       (err) => {
         Swal.close();

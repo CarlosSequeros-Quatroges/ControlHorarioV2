@@ -179,7 +179,6 @@ export class RegistroJornadaComponent {
 
   actualizarRegistro(i: number) {
     if (this.isAnterior && this.registros[i].modoIniFinAutoMan != 'VA') {
-      console.log('No actualizo, es de fecha anterior');
       return;
     }
 

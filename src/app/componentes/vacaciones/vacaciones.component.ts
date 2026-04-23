@@ -321,12 +321,9 @@ export class VacacionesComponent implements OnInit {
       start: this.selectedDateRange?.start || null,
       end: this.selectedDateRange?.end || null,
     });
-
-    console.log('setFormRangeControls', this.range.value);
   }
 
   enviarSolicitud() {
-    console.log('enviarSolicitud', this.selectedDateRange);
     if (!this.selectedDateRange || !this.selectedDateRange.start) {
       alert('Seleccione un rango de fechas');
       return;
@@ -373,8 +370,6 @@ export class VacacionesComponent implements OnInit {
   }
 
   validaSolicitud(datos: RegistroVacaciones) {
-    console.log('validaSolicitud', datos);
-
     Swal.fire({
       text: 'Validando solicitud 123',
       icon: 'info',
@@ -387,13 +382,10 @@ export class VacacionesComponent implements OnInit {
     const hasta: string =
       this.datepipe.transform(datos.hasta, 'dd/MM/yyyy') || desde;
 
-    console.log('validaSolicitud', datos, desde, hasta);
-
     this.cosmos
       .validaSolicitud(datos.id, desde, hasta, datos.dias, datos.ejercicio)
       .subscribe(
         (resp: String) => {
-          console.log('validaSolicitud resp', resp);
           Swal.close();
           this.cargaRegistros(
             this.anio.value || new Date().getFullYear().toString(),
@@ -402,7 +394,6 @@ export class VacacionesComponent implements OnInit {
         (err) => {
           Swal.close();
 
-          console.log('validaSolicitud err', err);
           Swal.fire({
             text: err,
             icon: 'info',
