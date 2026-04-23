@@ -11,7 +11,7 @@
   <section class="destinatario">
     <p><strong>A la atención de:</strong> {{ usuario.nombre }}</p>
     <p><strong>Empresa:</strong> Microgesti&oacute;n Software S.L.</p>
-    <p><strong>Fecha:</strong> {{ datos.fechareg | date: "dd/MMM/yyyy" }}</p>
+    <p><strong>Fecha:</strong> {{ datos.fechareg }}</p>
   </section>
 
   <main class="contenido">
@@ -19,10 +19,10 @@
 
     <p>
       Por medio de la presente le comunicamos que, con fecha
-      {{ datos.fecha | date: "dd/MMM/yyyy" }}, comenzará el disfrute de
+      {{ datos.fecha | date: "dd/MM/yyyy" }}, comenzará el disfrute de
       {{ datos.dias }} días hábiles de vacaciones correspondiente al ejercicio
       {{ datos.ejercicio }}, debiendo incorporarse nuevamente a su puesto de
-      trabajo el día {{ datos.hasta | date: "dd/MMM/yyyy" }}.
+      trabajo el día {{ datos.hasta | date: "dd/MM/yyyy" }}.
     </p>
 
     <p>Atentamente,</p>

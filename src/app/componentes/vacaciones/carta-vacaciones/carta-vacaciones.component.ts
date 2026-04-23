@@ -25,6 +25,7 @@ export class CartaVacacionesComponent implements OnInit {
   public datos!: RegistroVacaciones;
   constructor(public usuario: UsuarioModel) {
     this.datos = this.router.getCurrentNavigation()?.extras.state?.['data'];
+    console.log(this.datos);
   }
 
   ngOnInit(): void {}
