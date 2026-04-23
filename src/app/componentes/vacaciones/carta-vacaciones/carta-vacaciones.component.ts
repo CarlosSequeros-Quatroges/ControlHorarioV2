@@ -16,11 +16,12 @@ export class CartaVacacionesComponent implements OnInit {
 
   private router = inject(Router);
 
+  /*
   public fechainicio: string = '';
   public fechafinal: string = '';
   public dias: number = 0;
   public ejercicio: string = '';
-
+*/
   public datos!: RegistroVacaciones;
   constructor(public usuario: UsuarioModel) {
     this.datos = this.router.getCurrentNavigation()?.extras.state?.['data'];

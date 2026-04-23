@@ -237,11 +237,14 @@ export class VacacionesComponent implements OnInit {
     });
     Swal.showLoading();
 
+    const tmpFecha: string =
+      this.datepipe.transform(datos.fecha, 'dd/MM/yyyy') ?? '';
+
     this.cosmos
       .subeCarta(
         this.usuario.codigo,
         this.usuario.matricula,
-        datos.fecha,
+        tmpFecha,
         datos.b64UploadFile,
       )
       .subscribe(
