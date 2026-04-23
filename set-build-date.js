@@ -7,8 +7,7 @@ const environmentFile = path.join(
 );
 
 const buildDate = new Date()
-  .toISOString()
-  .toLocaleString("es-ES")
+  .toLocaleString("es-ES", { timeZone: "Europe/London", hour12: false })
   .replace("T", " ")
   .split(".")[0];
 
