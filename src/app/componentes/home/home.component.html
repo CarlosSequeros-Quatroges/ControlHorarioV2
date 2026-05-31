@@ -89,7 +89,12 @@
   }
   <!-- vista pantalla-->
   @if (imprimir) {
-    <app-home-list [registros]="registros" [totales]="totales"></app-home-list>
+    <app-home-list
+      [registros]="registros"
+      [totales]="totales"
+      [totalesMes]="totalesMes"
+      [nombreUsuario]="usuario.nombre"
+    ></app-home-list>
   }
 </div>
 @if (!imprimir) {
