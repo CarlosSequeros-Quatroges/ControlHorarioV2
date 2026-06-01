@@ -487,6 +487,7 @@ export class HomeComponent {
     this.imprimir = true;
     setTimeout(() => {
       window.print();
+      this.imprimir = false;
     }, 300);
   }
 }

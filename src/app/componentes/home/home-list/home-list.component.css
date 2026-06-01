@@ -1,47 +1,182 @@
-.titulos {
-  border-bottom: 1px solid rgb(0, 0, 0);
-  padding-bottom: 5px;
-  margin-bottom: 5px;
+:host {
+  display: block;
+  color: #111;
+  font-size: 13px;
+  line-height: 1.25;
 }
 
-mat-label {
-  font-size: 0.7rem;
+.listado-jornada h3 {
+  margin: 0 0 10px;
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
 }
 
-mat-select {
-  font-size: 0.7rem;
+.usuario-listado {
+  margin: 0 0 6px;
+  font-size: 0.98rem;
 }
 
-mat-form-field {
-  width: 140px;
-  line-height: 1;
+.usuario-etiqueta {
+  font-weight: 700;
 }
 
-/* Contenedor común para cabecera y filas */
 .grid-listado {
   display: grid;
-  /* Esto crea 7 columnas iguales. Si prefieres que unas sean más anchas que otras, 
-     puedes cambiar '1fr' por medidas fijas como '100px 80px 80px 100px 100px 100px 100px' */
-  grid-template-columns: repeat(7, 1fr);
-  gap: 10px; /* Espacio entre columnas */
+  grid-template-columns: 1.25fr 0.9fr 0.9fr 1fr 1fr 1fr 1fr;
+  column-gap: 10px;
   align-items: center;
-  padding: 10px;
-  color: rgb(0, 0, 0);
-  margin: 5px 0;
+  padding: 6px 8px;
+  margin: 0;
+  color: inherit;
+  font-size: 1rem;
+  line-height: 1.2;
 }
 
-/* Estilo para la cabecera (opcional) */
 .cabecera-listado {
-  font-weight: bold;
-  border-bottom: 2px solid #ccc;
-  background-color: #919191;
+  border-bottom: 1px solid #6e6e6e;
+  padding-top: 2px;
+  padding-bottom: 8px;
+  margin-bottom: 2px;
+  font-weight: 700;
+  background: transparent;
 }
 
-/* Estilo para las filas (opcional) */
 .fila-listado {
-  border-bottom: 1px solid #333333;
+  border-bottom: 1px solid #5a5a5a;
 }
 
-.fila-par {
-  background-color: #f2f2f2;
+.fila-listado .grid-listado {
+  padding-top: 7px;
+  padding-bottom: 7px;
+}
+
+.fila-par,
+.fila-impar {
+  background: transparent;
+}
+
+.fila-listado span:not(:first-child) {
+  font-variant-numeric: tabular-nums;
+}
+
+.estado-dia {
+  grid-column: 2 / 8;
+  white-space: nowrap;
+}
+
+.resumen-listado {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  margin: 2px 0 8px;
+  border-top: 2px solid #2b2b2b;
+  border-bottom: 1px solid #5a5a5a;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  font-weight: 700;
+}
+
+.resumen-item {
+  white-space: nowrap;
+}
+
+.resumen-titulo {
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+@media (max-width: 900px) {
+  :host {
+    font-size: 12px;
+  }
+
+  .listado-jornada h3 {
+    font-size: 1.6rem;
+  }
+
+  .grid-listado {
+    grid-template-columns: 1.4fr repeat(6, minmax(56px, 1fr));
+    column-gap: 6px;
+    padding-left: 4px;
+    padding-right: 4px;
+  }
+}
+
+@page {
+  size: A4 portrait;
+  margin: 10mm 12mm 14mm;
+
+  @bottom-center {
+    content: "Página " counter(page) " de " counter(pages);
+    font-size: 9pt;
+    text-align: center;
+    margin-bottom: 5mm;
+  }
+}
+
+@media print {
+  :host {
+    color: #000;
+    font-size: 10.5pt;
+    line-height: 1.15;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .listado-jornada {
+    width: 100%;
+    padding-bottom: 8mm;
+  }
+
+  .listado-jornada h3 {
+    margin: 0 0 6mm;
+    font-size: 16pt;
+    font-weight: 700;
+    letter-spacing: 0;
+  }
+
+  .usuario-listado {
+    margin: 0 0 2.4mm;
+    font-size: 10pt;
+  }
+
+  .grid-listado {
+    grid-template-columns: 27mm 15mm 15mm 17mm 18mm 18mm 18mm;
+    column-gap: 2.5mm;
+    padding: 1.2mm 0;
+    font-size: 10pt;
+    line-height: 1.1;
+  }
+
+  .cabecera-listado {
+    margin-bottom: 1mm;
+    padding-top: 0;
+    padding-bottom: 1.4mm;
+    border-bottom: 0.3mm solid #000;
+    font-size: 9.6pt;
+  }
+
+  .fila-listado {
+    border-bottom: 0.25mm solid #000;
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  .fila-listado .grid-listado {
+    padding-top: 1.3mm;
+    padding-bottom: 1.3mm;
+  }
+
+  .resumen-listado {
+    gap: 2mm 4mm;
+    margin: 0 0 3mm;
+    border-top: 0.45mm solid #000;
+    border-bottom: 0.25mm solid #000;
+    padding-top: 1.2mm;
+    padding-bottom: 1.2mm;
+    font-size: 9.8pt;
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
 }

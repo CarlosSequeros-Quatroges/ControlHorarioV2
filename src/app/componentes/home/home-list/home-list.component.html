@@ -1,4 +1,4 @@
-<div *ngIf="registros">
+<div *ngIf="registros" class="listado-jornada">
   <div>
     <h3 class="text-left">REGISTROS DE JORNADA {{ mes }}</h3>
     <!-- 
@@ -7,17 +7,36 @@
     totales final de mes
     -->
   </div>
+  <p class="usuario-listado" *ngIf="nombreUsuario">
+    <span class="usuario-etiqueta">Empleado:</span> {{ nombreUsuario }}
+  </p>
+
+  <div class="resumen-listado">
+    <span class="resumen-item resumen-titulo">Resumen Mensual:</span>
+    <span class="resumen-item"
+      >Total Jornada: {{ totalListado.jornada | min2hourMin }} Horas</span
+    >
+    <span class="resumen-item"
+      >Realizada: {{ totalListado.duracion | min2hourMin }} Horas</span
+    >
+    <span class="resumen-item" *ngIf="totalListado.positivo"
+      >Diferencias: {{ totalListado.diferencia | min2hourMin }} Horas</span
+    >
+    <span class="resumen-item" *ngIf="!totalListado.positivo"
+      >Diferencias: -{{ totalListado.diferencia | min2hourMin }} Horas</span
+    >
+  </div>
 
   <!--TOTALES DIA A DIA-->
 
   <div class="cabecera-listado grid-listado">
-    <a>Fecha</a>
-    <a>Inicio</a>
-    <a>Final</a>
-    <a>Parcial</a>
-    <a>Realizada</a>
-    <a>Jornada</a>
-    <a>Diferencia</a>
+    <span>Fecha</span>
+    <span>Inicio</span>
+    <span>Final</span>
+    <span>Parcial</span>
+    <span>Realizada</span>
+    <span>Jornada</span>
+    <span>Diferencia</span>
   </div>
 
   @for (
@@ -34,18 +53,13 @@
       @if ((registros | filtrar: "inicio" : total.fecha).length == 0) {
         <div class="grid-listado">
           <span>{{ total.fecha }}</span>
-          <span>{{
+          <span class="estado-dia">{{
             total.tipo == "F"
               ? "No laborable "
               : total.tipo == "V"
                 ? "Vacaciones"
                 : "Sin registros"
           }}</span>
-          <span></span>
-          <span></span>
-          <span></span>
-          <span></span>
-          <span></span>
         </div>
       }
 
@@ -85,4 +99,5 @@
       }
     </div>
   }
+
 </div>
